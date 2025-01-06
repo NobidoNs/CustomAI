@@ -3,64 +3,85 @@ import pyaudio
 import json
 import time
 from g4f.client import Client
+import multiprocessing
+import speech_recognition as sr
 
 def requestTextAI(request):
-    models = ['gpt-4o','gpt-4o-mini','gpt-4-turbo','gpt-3.5-turbo']
+    print('request:',request)
+    # 'gpt-4o' add to second RS
+    models = ['gpt-4o-mini','gpt-4-turbo','gpt-3.5-turbo']
     for model in models:
-        response = client.chat.completions.create(
-            model=model,
-            messages=[
-                {"role": "system", "content": "Ты искусственный интелеки Джарвис из фильмов про железного человека"},
-                {"role": "user", "content": request}
-            ],
-            web_search = True,
-            temperature=0.9,
-        )
-        return response.choices[0].message.content
+        try:
+            response = client.chat.completions.create(
+                model=model,
+                messages=[
+                    {"role": "system", "content": "Ты искусственный интелеки Джарвис из фильмов про железного человека"},
+                    {"role": "user", "content": request}
+                ],
+                web_search = True,
+                temperature=0.9,
+            )
+            return response.choices[0].message.content
+        except:
+            pass
 
-def main():
-    # voice to text
-    recognizer = KaldiRecognizer(model, 16000, hotwords)
-    startTime = -1
+def listenAll(startTime,queue):
+    googleRec = sr.Recognizer()
+    while time.time()-startTime<10:
+        print(time.time()-startTime)
+        with sr.Microphone() as source:
+            audio = googleRec.listen(source)
+        try:
+            text = googleRec.recognize_google(audio, language="ru-RU")
+            print("Распознанный текст:", text)
+            queue.put(text)
+            startTime = time.time()
+        except:
+            pass
+
+        with sr.Microphone() as source:
+            audio = googleRec.listen(source)
+    print('OFF')
+
+def listenCommand(queue):
+    recognizer = KaldiRecognizer(model, 16000, wakeWords)
     while True:
-        data = stream.read(16384)
-        if recognizer.AcceptWaveform(data):
-
+        data = stream.read(8192,False)
+        if recognizer.AcceptWaveform(data): 
             res = json.loads(recognizer.Result())["text"]
+            if res != '':
+                  print('ON')
+                  listenAll(time.time(),queue)
 
-    # check wake word 
-            if res == wakeWord:
-                startTime = time.time()
-                recognizer = KaldiRecognizer(model, 16000)
-                print('activate')
+def main(queue):
+    while True:
+        if queue.empty():
+            time.sleep(1)
+        else:
+            res = queue.get()
+            if res not in hotWords:
+                print(requestTextAI(res))
             
-    # check wake word duration
-            elif startTime != -1 :
-                if time.time()-startTime <= 10:
-                    if res != '':
-                        startTime = time.time()
-    # request to textAI
-                    print('You say:', res)
-                    print(requestTextAI(res))
-                else:
-                    print('disable')
-                    startTime = -1
-                    recognizer = KaldiRecognizer(model, 16000, hotwords)
+
 
 # voice to text
-model = Model(r'C:/work/AI/vosk-model-small-ru-0.22')
+hotWords = ["ви"]
+wakeWords = '["ви"]'
 
-hotwords= '["джарвис"]'
+model = Model(r'C:/work/AI/vosk-model-small-ru-0.22')
 
 cap = pyaudio.PyAudio()
 stream = cap.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=16384)
 stream.start_stream()
-
-wakeWord = hotwords[0]
 
 # text AI
 client = Client()
 
 
 if __name__ == "__main__":
-    main()
+    queue = multiprocessing.Queue()
+    listenProcess = multiprocessing.Process(target=listenCommand, args=(queue,))
+    mainProcess = multiprocessing.Process(target=main, args=(queue,))
+    listenProcess.start()
+    mainProcess.start()
+
