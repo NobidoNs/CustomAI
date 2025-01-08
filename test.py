@@ -5,17 +5,24 @@ import time
 from g4f.client import Client
 import multiprocessing
 import speech_recognition as sr
+from gtts import gTTS
+from playsound import playsound
+
+def tts(text):
+    tts = gTTS(text=text, lang='ru', slow=False)
+    tts.save("output.mp3")
+    playsound("output.mp3")
 
 def requestTextAI(request):
     print('request:',request)
-    # 'gpt-4o' add to second RS
-    models = ['gpt-4o-mini','gpt-4-turbo','gpt-3.5-turbo']
+    # 'gpt-3.5-turbo','gpt-4o' add to second RS
+    models = ['gpt-4']
     for model in models:
         try:
             response = client.chat.completions.create(
                 model=model,
                 messages=[
-                    {"role": "system", "content": "Ты искусственный интелеки Джарвис из фильмов про железного человека"},
+                    {"role": "system", "content": ""},
                     {"role": "user", "content": request}
                 ],
                 web_search = True,
@@ -23,17 +30,16 @@ def requestTextAI(request):
             )
             return response.choices[0].message.content
         except:
+            print('ex')
             pass
 
 def listenAll(startTime,queue):
     googleRec = sr.Recognizer()
-    while time.time()-startTime<10:
-        print(time.time()-startTime)
+    while time.time()-startTime<7:
         with sr.Microphone() as source:
             audio = googleRec.listen(source)
         try:
             text = googleRec.recognize_google(audio, language="ru-RU")
-            print("Распознанный текст:", text)
             queue.put(text)
             startTime = time.time()
         except:
@@ -41,17 +47,17 @@ def listenAll(startTime,queue):
 
         with sr.Microphone() as source:
             audio = googleRec.listen(source)
-    print('OFF')
 
 def listenCommand(queue):
-    recognizer = KaldiRecognizer(model, 16000, wakeWords)
+    recognizer = KaldiRecognizer(model, 16000, recognitionWords)
     while True:
         data = stream.read(8192,False)
         if recognizer.AcceptWaveform(data): 
             res = json.loads(recognizer.Result())["text"]
-            if res != '':
+            if res == 'ви':
                   print('ON')
                   listenAll(time.time(),queue)
+                  print('OFF')
 
 def main(queue):
     while True:
@@ -60,13 +66,19 @@ def main(queue):
         else:
             res = queue.get()
             if res not in hotWords:
-                print(requestTextAI(res))
+                response = requestTextAI(res)
+                print(response)
+                tts(response)
             
 
 
 # voice to text
 hotWords = ["ви"]
-wakeWords = '["ви"]'
+wakeWord = "ви"
+baitWords = ['винда','виндвос','в']
+baitWords = ",".join(f'"{item}"' for item in baitWords)
+
+recognitionWords = f'["{wakeWord}",{baitWords}]'
 
 model = Model(r'C:/work/AI/vosk-model-small-ru-0.22')
 
