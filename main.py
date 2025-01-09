@@ -6,12 +6,17 @@ from g4f.client import Client
 import multiprocessing
 import speech_recognition as sr
 from gtts import gTTS
-from playsound import playsound
+from pygame import mixer
 
 def tts(text):
-    tts = gTTS(text=text, lang='ru', slow=False)
-    tts.save("output.mp3")
-    playsound("output.mp3")
+
+    tts = gTTS(text=text, lang='ru')
+    file_name = "output.mp3"
+    tts.save(file_name)
+    mixer.init()
+    sound = mixer.Sound("C:/work/git/CustomAI/output.mp3")
+    sound.play()
+
 
 def requestTextAI(request):
     print('request:',request)
@@ -27,6 +32,7 @@ def requestTextAI(request):
                 ],
                 web_search = True,
                 temperature=0.9,
+                max_tokens=100,
             )
             return response.choices[0].message.content
         except:
@@ -75,7 +81,7 @@ def main(queue):
 # voice to text
 hotWords = ["ви"]
 wakeWord = "ви"
-baitWords = ['винда','виндвос','в']
+baitWords = ['винда','виндвос','в','вы','и']
 baitWords = ",".join(f'"{item}"' for item in baitWords)
 
 recognitionWords = f'["{wakeWord}",{baitWords}]'
@@ -91,9 +97,15 @@ client = Client()
 
 
 if __name__ == "__main__":
+    tts('привет')
+    tts('hello')
+    
     queue = multiprocessing.Queue()
+    outputText = multiprocessing.Queue()
+
     listenProcess = multiprocessing.Process(target=listenCommand, args=(queue,))
     mainProcess = multiprocessing.Process(target=main, args=(queue,))
+
     listenProcess.start()
     mainProcess.start()
 
