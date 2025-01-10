@@ -49,7 +49,9 @@ This is a minimal yet powerful AI assistant designed for home use, built with ne
    cd CustomAI
 2. Install dependencies:
    pip install -r requirements.txt
-3. Run main.py file.
+3. (Optional) Install vosk model:
+   Install model from https://alphacephei.com/vosk/models 
+4. Run main.py file.
 
 ## 💡 Contribution
 We welcome contributions to enhance the assistant's capabilities! Feel free to submit a pull request or open an issue.
