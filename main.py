@@ -14,6 +14,30 @@ import sys
 if sys.platform.startswith("win"):
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
+def wright(text,log=False):
+    print(text)
+    if log == False or wrightLog == True:
+        with open('output.txt', 'a', encoding='utf-8') as file:
+            file.write(f"\n{text}\n")
+
+def checkRequestInFile():
+    with open('output.txt', 'rb') as file:  # Открываем файл в бинарном режиме
+        file.seek(0, 2)  # Переходим в конец файла
+        position = file.tell()  # Определяем текущую позицию
+        line = b''
+        while position > 0:
+            position -= 1
+            file.seek(position)  # Переходим к предыдущему символу
+            char = file.read(1)
+            if char == b'\n' and line:  # Если встречаем конец строки
+                break
+            line = char + line
+        line = line.decode('utf-8')
+        for code in codes:
+            if line[:len(code)] == code:
+                return line[len(code):]
+        return False
+
 def loadSound(text):
     mixer.music.unload()
     tts = gTTS(text=text, lang='ru')
@@ -36,7 +60,7 @@ def tts(inpText, inpCommand):
 
 
 def requestTextAI(request):
-    print('request:',request)
+    wright(f'request: {request}',log=True)
     # 'gpt-3.5-turbo','gpt-4o' add to second RS
     models = ['gpt-4']
     for model in models:
@@ -53,7 +77,7 @@ def requestTextAI(request):
             )
             return response.choices[0].message.content
         except:
-            print('ex')
+            wright('Get Response Failed', log=True)
             pass
 
 def listenAll(startTime,queue):
@@ -78,29 +102,30 @@ def listenCommand(queue):
         if recognizer.AcceptWaveform(data): 
             res = json.loads(recognizer.Result())["text"]
             if res in wakeWord:
-                  print('ON')
+                  wright('ON')
                 #   tts('да')
                   listenAll(time.time(),queue)
-                  print('OFF')
+                  wright('OFF')
                 #   tts('отключаюсь')
             elif res in muteCommands:
                 queue.put(res)
 
 def main(queue,outputText,commandToSound):
     while True:
-        if queue.empty():
+        req = checkRequestInFile()
+        if queue.empty() and not req:
             time.sleep(1)
         else:
-            res = queue.get()
+            res = req if req else queue.get()
+
             if res not in commands:
                 response = requestTextAI(res)
                 outputText.put(response)
-                print(response)
+                wright(response)
             else:
                 if res in muteCommands:
-                    print('stop')
+                    wright('stop')
                     commandToSound.put('stop')
-
             
 
 
@@ -108,9 +133,11 @@ def main(queue,outputText,commandToSound):
 
 # You can change it
 muteCommands = ["тихо","хватит","стоп","молчи"] # Commands to stop play sound
-wakeWord = ["ви"]                               # Name of assistant 
+wakeWord = ["ви","вай"]                               # Name of assistant 
 baitWords = ['винда','виндвос','в','вы','и']    # For more accurate recognition paste words similar wakeWord
 waitTime = 7                                    # Time which assistant listen
+wrightLog = False                               # Set True if you need more info in output file
+codes = ['  !', '    !','\t!']                        # Combinations in txt file to ask AI
 
 # some boring converting
 commands = muteCommands
