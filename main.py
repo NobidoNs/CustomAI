@@ -159,6 +159,8 @@ client = Client()
 
 # sound init 
 mixer.init(frequency=53040) # the sound seems to have changed
+mixer.music.load('sounds/rocket.wav')
+mixer.music.play()
 
 # run threads
 if __name__ == "__main__":
