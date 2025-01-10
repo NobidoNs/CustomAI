@@ -53,6 +53,8 @@ This is a minimal yet powerful AI assistant designed for home use, built with ne
    Install model from https://alphacephei.com/vosk/models 
 4. Run main.py file.
 
+Last simplest configuration: https://github.com/NobidoNs/CustomAI/commit/89e4294d76a01d9c8c6b4fd115cf91d5c99e1642
+
 ## 💡 Contribution
 We welcome contributions to enhance the assistant's capabilities! Feel free to submit a pull request or open an issue.
 
