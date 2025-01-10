@@ -1,0 +1,7 @@
+vosk==0.3.44
+pyaudio
+g4f
+SpeechRecognition
+gtts
+pygame
+asyncio
