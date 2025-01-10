@@ -45,8 +45,14 @@ This is a minimal yet powerful AI assistant designed for home use, built with ne
 
 1. Clone the repository:  
    ```bash
-   git clone https://github.com/yourusername/ai-home-assistant.git
-   cd ai-home-assistant
+   git clone https://github.com/NobidoNs/CustomAI.git
+   cd CustomAI
 2. Install dependencies:
    pip install -r requirements.txt
 3. Run main.py file.
+
+## 💡 Contribution
+We welcome contributions to enhance the assistant's capabilities! Feel free to submit a pull request or open an issue.
+
+## 📝 License
+This project is licensed under the MIT License.
