@@ -14,6 +14,9 @@ import sys
 if sys.platform.startswith("win"):
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
+def clearFile():
+    open('output.txt', 'w', encoding='utf-8')
+
 def wright(text,log=False):
     print(text)
     if log == False or wrightLog == True:
@@ -51,8 +54,12 @@ def tts(inpText, inpCommand):
             command = inpCommand.get()
             if command == "stop":
                 mixer.music.stop()
+            elif command == "-mute":
+                break
         elif not inpText.empty():
             text = inpText.get()
+            for char in "*#`":
+                text = text.replace(char, "")
             loadSound(text)
             mixer.music.play()
         else:
@@ -61,6 +68,7 @@ def tts(inpText, inpCommand):
 
 def requestTextAI(request):
     wright(f'request: {request}',log=True)
+    wright('Loading...')
     # 'gpt-3.5-turbo','gpt-4o' add to second RS
     models = ['gpt-4']
     for model in models:
@@ -72,8 +80,7 @@ def requestTextAI(request):
                     {"role": "user", "content": request}
                 ],
                 web_search = True,
-                temperature=0.9,
-                max_tokens=100,
+                temperature=0.7,
             )
             return response.choices[0].message.content
         except:
@@ -126,21 +133,27 @@ def main(queue,outputText,commandToSound):
                 if res in muteCommands:
                     wright('stop')
                     commandToSound.put('stop')
-            
+                elif res in voiceCommands:
+                    wright('MUTE')
+                    commandToSound.put('-mute')
+                elif res in clearCommands:
+                    clearFile()
 
 
 # <- Voice to text ->
 
 # You can change it
-muteCommands = ["тихо","хватит","стоп","молчи"] # Commands to stop play sound
-wakeWord = ["ви","вай"]                               # Name of assistant 
-baitWords = ['винда','виндвос','в','вы','и']    # For more accurate recognition paste words similar wakeWord
-waitTime = 7                                    # Time which assistant listen
-wrightLog = False                               # Set True if you need more info in output file
-codes = ['  !', '    !','\t!']                        # Combinations in txt file to ask AI
+muteCommands = ["тихо","хватит","стоп","молчи","-stop","-стоп"] # Commands to stop play sound
+voiceCommands = ["-mute","-mute\n"]
+clearCommands = ["-cli","-cls"]
+wakeWord = ["джарвис"]                               # Name of assistant 
+baitWords = ["вис"]                                  # For more accurate recognition paste words similar wakeWord
+waitTime = 7                                         # Time which assistant listen
+wrightLog = False                                    # Set True if you need more info in output file
+codes = ['  !', '    !','\t!']                       # Combinations in txt file to ask AI
 
 # some boring converting
-commands = muteCommands
+commands = muteCommands+voiceCommands+clearCommands
 wakeWordStr = ",".join(f'"{item}"' for item in wakeWord)
 baitWordsStr = ",".join(f'"{item}"' for item in baitWords)
 muteCommandsStr = ",".join(f'"{item}"' for item in muteCommands)
@@ -159,8 +172,8 @@ client = Client()
 
 # sound init 
 mixer.init(frequency=53040) # the sound seems to have changed
-mixer.music.load('sounds/rocket.wav')
-mixer.music.play()
+# mixer.music.load('sounds/rocket.wav')
+# mixer.music.play()
 
 # run threads
 if __name__ == "__main__":
@@ -175,3 +188,5 @@ if __name__ == "__main__":
     listenProcess.start()
     mainProcess.start()
     ttsProcess.start()
+
+    mainProcess.join()
