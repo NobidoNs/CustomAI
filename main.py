@@ -7,6 +7,8 @@ import multiprocessing
 import speech_recognition as sr
 from gtts import gTTS
 from pygame import mixer
+import os
+from config import *  # Import all config variables
 
 # fix warning
 import asyncio
@@ -15,16 +17,16 @@ if sys.platform.startswith("win"):
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 def clearFile():
-    open('output.txt', 'w', encoding='utf-8')
+    open(outputFile, 'w', encoding='utf-8')
 
 def wright(text,log=False):
     print(text)
     if log == False or wrightLog == True:
-        with open('output.txt', 'a', encoding='utf-8') as file:
+        with open(outputFile, 'a', encoding='utf-8') as file:
             file.write(f"\n{text}\n")
 
 def checkRequestInFile():
-    with open('output.txt', 'rb') as file:  # Открываем файл в бинарном режиме
+    with open(outputFile, 'rb') as file:  # Открываем файл в бинарном режиме
         file.seek(0, 2)  # Переходим в конец файла
         position = file.tell()  # Определяем текущую позицию
         line = b''
@@ -68,7 +70,7 @@ def tts(inpText, inpCommand):
 
 def requestTextAI(request):
     wright(f'request: {request}',log=True)
-    wright('Loading...')
+    wright('*Loading...*')
     # 'gpt-3.5-turbo','gpt-4o' add to second RS
     models = ['gpt-4']
     for model in models:
@@ -138,29 +140,23 @@ def main(queue,outputText,commandToSound):
                     commandToSound.put('-mute')
                 elif res in clearCommands:
                     clearFile()
+                elif res in restartZapretCommands:
+                    wright('Restarting zapret program...')
+                    # Kill existing process if running
+                    os.system(f'taskkill /F /IM {os.path.basename(zapretProcess)}')
+                    # Start new instance
+                    os.startfile(zapretPath)
 
-
-# <- Voice to text ->
-
-# You can change it
-muteCommands = ["тихо","хватит","стоп","молчи","-stop","-стоп"] # Commands to stop play sound
-voiceCommands = ["-mute","-mute\n"]
-clearCommands = ["-cli","-cls"]
-wakeWord = ["джарвис"]                               # Name of assistant 
-baitWords = ["вис"]                                  # For more accurate recognition paste words similar wakeWord
-waitTime = 7                                         # Time which assistant listen
-wrightLog = False                                    # Set True if you need more info in output file
-codes = ['  !', '    !','\t!']                       # Combinations in txt file to ask AI
 
 # some boring converting
-commands = muteCommands+voiceCommands+clearCommands
+commands = muteCommands+voiceCommands+clearCommands+saveCommands+restartZapretCommands
 wakeWordStr = ",".join(f'"{item}"' for item in wakeWord)
 baitWordsStr = ",".join(f'"{item}"' for item in baitWords)
 muteCommandsStr = ",".join(f'"{item}"' for item in muteCommands)
 recognitionWords = f'[{wakeWordStr},{baitWordsStr},{muteCommandsStr}]'
 
 # import vosk model
-model = Model(r'C:/work/AI/vosk-model-small-ru-0.22')
+model = Model(voskModelPath)
 
 # audio stream settings 
 cap = pyaudio.PyAudio()
@@ -171,9 +167,11 @@ stream.start_stream()
 client = Client()
 
 # sound init 
-mixer.init(frequency=53040) # the sound seems to have changed
-# mixer.music.load('sounds/rocket.wav')
-# mixer.music.play()
+mixer.init(frequency=AUDIO_FREQUENCY) # the sound seems to have changed
+
+# to run start sound
+mixer.music.load(soundStart)
+mixer.music.play()
 
 # run threads
 if __name__ == "__main__":
