@@ -8,7 +8,7 @@ import speech_recognition as sr
 from gtts import gTTS
 from pygame import mixer
 import os
-# from pydub import AudioSegment
+from pydub import AudioSegment
 from config import *  # Import all config variables
 
 # fix warning
@@ -47,36 +47,43 @@ def requestInFile():
 
     for indexLine in range(1,len(lines)+1):
         line = lines[-indexLine]
-        # print(line)
         for code in codes:
             if code in line:
-                # print(code)
                 return "".join(lines[-indexLine:]).split(code,1)[1]
         if line in stopFind:
             return ''
     return ''
 
     
-def loadSound(text):
+def loadSound(text,speed=1):
     mixer.music.unload()
     tts = gTTS(text=text, lang='ru')
     file_name = "output.mp3"
     tts.save(file_name)
+    if speed != 1:
+        audio = AudioSegment.from_file("output.mp3")
+        new_audio = audio.speedup(playback_speed=speed)
+        new_audio.export("output.mp3", format="mp3")
+
     mixer.music.load("output.mp3")
 
 def tts(inpText, inpCommand):
+    speed = 1
     while True:
         if not inpCommand.empty():
             command = inpCommand.get()
+            argument = command.split(' ', 1)[1] if ' ' in command else None
             if command == "stop":
                 mixer.music.stop()
             elif command == "-mute":
                 break
+            elif "-speed" in command:
+                speed = float(argument)
         elif not inpText.empty():
             text = inpText.get()
             for char in "*#`></_-+":
                 text = text.replace(char, "")
-            loadSound(text)
+            loadSound(text,speed=speed)
             mixer.music.play()
         else:
             time.sleep(1)
@@ -152,24 +159,32 @@ def main(queue,outputText,commandToSound):
 
             if firstWord in commands:
                 command = firstWord
+                argument = res.split(' ', 1)[1] if ' ' in res else None
                 if command in muteCommands:
                     wright('stop')
                     commandToSound.put('stop')
+
                 elif command in voiceCommands:
                     wright('MUTE')
                     commandToSound.put('-mute')
+
                 elif command in clearCommands:
                     clearFile()
+
                 elif command in restartZapretCommands:
                     wright('Restarting zapret program...')
                     # Kill existing process if running
                     os.system(f'taskkill /F /IM {os.path.basename(zapretProcess)}')
                     # Start new instance
                     os.startfile(zapretPath)
+
                 elif command in saveCommands:
-                    custom_name = res.split(' ', 1)[1] if ' ' in res else None
-                    backup_file = save_backup(custom_name)
+                    backup_file = save_backup(argument)
                     wright(f'Backup saved as: {backup_file}')
+
+                elif command in setSpeedCommands:
+                    wright(f'Speed set to {argument}')
+                    commandToSound.put(f'-speed {argument}')
             else:
                 response = requestTextAI(res)
                 outputText.put(response)
@@ -179,7 +194,7 @@ def main(queue,outputText,commandToSound):
 
 
 # some boring converting
-commands = muteCommands+voiceCommands+clearCommands+saveCommands+restartZapretCommands+saveCommands
+commands = muteCommands+voiceCommands+clearCommands+saveCommands+restartZapretCommands+saveCommands+setSpeedCommands
 wakeWordStr = ",".join(f'"{item}"' for item in wakeWord)
 baitWordsStr = ",".join(f'"{item}"' for item in baitWords)
 muteCommandsStr = ",".join(f'"{item}"' for item in muteCommands)

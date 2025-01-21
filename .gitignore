@@ -8,3 +8,4 @@ __pycache__/config.cpython-313.pyc
 sounds/
 output.md
 backups/test.md
+piecesAndExamples/TTS_speed.py

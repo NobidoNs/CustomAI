@@ -24,6 +24,8 @@ voiceCommands = ["-mute", "-mute\n"]
 clearCommands = ["-cli", "-cls"]
 saveCommands = ["-save"]
 restartZapretCommands = ["-zapret", "-yt", "-ds"]
+setSpeedCommands = ["-speed","-x","-X"]
+upSpeedCommands = [""]
 
 # File codes
 codes = ['  !', '    !', '\t!']
