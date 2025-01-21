@@ -20,12 +20,13 @@ wrightLog = False
 
 # Command lists
 muteCommands = ["тихо", "хватит", "стоп", "молчи", "-stop", "-стоп"]
-voiceCommands = ["-mute", "-mute\n"]
+voiceCommands = ["-mute"]
 clearCommands = ["-cli", "-cls"]
 saveCommands = ["-save"]
 restartZapretCommands = ["-zapret", "-yt", "-ds"]
 setSpeedCommands = ["-speed","-x","-X"]
-upSpeedCommands = [""]
+upSpeedCommands = ["давай быстрее", "говори быстрее"]
+downSpeedCommands = ["давай помедленней", "слишком быстро", "говори медленнее"]
 
 # File codes
 codes = ['  !', '    !', '\t!']

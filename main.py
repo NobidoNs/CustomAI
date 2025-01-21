@@ -78,7 +78,13 @@ def tts(inpText, inpCommand):
             elif command == "-mute":
                 break
             elif "-speed" in command:
-                speed = float(argument)
+                if argument == 'up':
+                    speed += 0.5
+                elif argument == 'down':
+                    speed -= 0.5
+                else:
+                    speed = float(argument)
+                wright(f'Speed set to {speed}')
         elif not inpText.empty():
             text = inpText.get()
             for char in "*#`></_-+":
@@ -150,10 +156,17 @@ def main(queue,outputText,commandToSound):
         if queue.empty() and not req:
             time.sleep(1)
         else:
-            res = req if req else queue.get()
+            if req: 
+                res = req
+            else:
+                res = queue.get()
+                wright(res)
 
             try:
                 firstWord = res.split(' ', 1)[0]
+                for i in commands:
+                    if res in i:
+                        firstWord = i
             except:
                 firstWord = None
 
@@ -183,8 +196,12 @@ def main(queue,outputText,commandToSound):
                     wright(f'Backup saved as: {backup_file}')
 
                 elif command in setSpeedCommands:
-                    wright(f'Speed set to {argument}')
                     commandToSound.put(f'-speed {argument}')
+
+                elif command in upSpeedCommands:
+                    commandToSound.put(f'-speed up')
+                elif command in downSpeedCommands:
+                    commandToSound.put(f'-speed down')
             else:
                 response = requestTextAI(res)
                 outputText.put(response)
@@ -194,7 +211,7 @@ def main(queue,outputText,commandToSound):
 
 
 # some boring converting
-commands = muteCommands+voiceCommands+clearCommands+saveCommands+restartZapretCommands+saveCommands+setSpeedCommands
+commands = muteCommands+voiceCommands+clearCommands+saveCommands+restartZapretCommands+saveCommands+setSpeedCommands+upSpeedCommands+downSpeedCommands
 wakeWordStr = ",".join(f'"{item}"' for item in wakeWord)
 baitWordsStr = ",".join(f'"{item}"' for item in baitWords)
 muteCommandsStr = ",".join(f'"{item}"' for item in muteCommands)
