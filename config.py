@@ -5,7 +5,7 @@ voskModelPath = 'C:/work/AI/vosk-model-small-ru-0.22'
 zapretPath = 'C:/Users/nobid/Downloads/Discord_zapret_with_voice_update_2/UltimateFix.bat'
 
 # File names
-outputFile = 'output.txt'
+outputFile = 'output.md'
 
 # process paths
 zapretProcess = 'C:/Users/nobid/Downloads/Discord_zapret_with_voice_update_2/bin'
@@ -25,6 +25,7 @@ restartZapretCommands = ["-zapret", "-yt", "-ds"]
 
 # File codes
 codes = ['  !', '    !', '\t!']
+stopFind = ['------------','*Loading...*']
 
 # Sound settings
 soundStart = '' # 'sounds/rocket.wav'

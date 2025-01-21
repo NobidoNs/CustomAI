@@ -25,24 +25,24 @@ def wright(text,log=False):
         with open(outputFile, 'a', encoding='utf-8') as file:
             file.write(f"\n{text}\n")
 
-def checkRequestInFile():
-    with open(outputFile, 'rb') as file:  # Открываем файл в бинарном режиме
-        file.seek(0, 2)  # Переходим в конец файла
-        position = file.tell()  # Определяем текущую позицию
-        line = b''
-        while position > 0:
-            position -= 1
-            file.seek(position)  # Переходим к предыдущему символу
-            char = file.read(1)
-            if char == b'\n' and line:  # Если встречаем конец строки
-                break
-            line = char + line
-        line = line.decode('utf-8')
-        for code in codes:
-            if line[:len(code)] == code:
-                return line[len(code):]
-        return False
+def requestInFile():
+    with open(outputFile, 'r', encoding='utf-8') as file:
+        content = file.read()
 
+    lines = content.splitlines()
+
+    for indexLine in range(1,len(lines)+1):
+        line = lines[-indexLine]
+        # print(line)
+        for code in codes:
+            if code in line:
+                # print(code)
+                return "".join(lines[-indexLine:]).split(code,1)[1]
+        if line in stopFind:
+            return ''
+    return ''
+
+    
 def loadSound(text):
     mixer.music.unload()
     tts = gTTS(text=text, lang='ru')
@@ -60,7 +60,7 @@ def tts(inpText, inpCommand):
                 break
         elif not inpText.empty():
             text = inpText.get()
-            for char in "*#`":
+            for char in "*#`></_-+":
                 text = text.replace(char, "")
             loadSound(text)
             mixer.music.play()
@@ -68,17 +68,21 @@ def tts(inpText, inpCommand):
             time.sleep(1)
 
 
-def requestTextAI(request):
+def requestTextAI(request,fastMode=False,precise=False):
     wright(f'request: {request}',log=True)
     wright('*Loading...*')
-    # 'gpt-3.5-turbo','gpt-4o' add to second RS
-    models = ['gpt-4']
+    models = ['gpt-4','gpt-3.5-turbo','gpt-4o']
+    content=''
+    if fastMode == True:
+        models = ['gpt-3.5-turbo','gpt-4o''gpt-4',]
+    if precise == True:
+        content = 'точный компьютер, который отвечает только по делу'
     for model in models:
         try:
             response = client.chat.completions.create(
                 model=model,
                 messages=[
-                    {"role": "system", "content": ""},
+                    {"role": "system", "content": content},
                     {"role": "user", "content": request}
                 ],
                 web_search = True,
@@ -121,16 +125,18 @@ def listenCommand(queue):
 
 def main(queue,outputText,commandToSound):
     while True:
-        req = checkRequestInFile()
+        req = requestInFile()
         if queue.empty() and not req:
             time.sleep(1)
         else:
             res = req if req else queue.get()
+            print(res)
 
             if res not in commands:
                 response = requestTextAI(res)
                 outputText.put(response)
                 wright(response)
+                wright('------------')
             else:
                 if res in muteCommands:
                     wright('stop')
@@ -146,6 +152,7 @@ def main(queue,outputText,commandToSound):
                     os.system(f'taskkill /F /IM {os.path.basename(zapretProcess)}')
                     # Start new instance
                     os.startfile(zapretPath)
+                wright('------------')
 
 
 # some boring converting
@@ -170,8 +177,12 @@ client = Client()
 mixer.init(frequency=AUDIO_FREQUENCY) # the sound seems to have changed
 
 # to run start sound
-mixer.music.load(soundStart)
-mixer.music.play()
+try:
+    mixer.music.load(soundStart)
+    mixer.music.play()
+except:
+    pass
+
 
 # run threads
 if __name__ == "__main__":
