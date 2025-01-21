@@ -8,6 +8,7 @@ import speech_recognition as sr
 from gtts import gTTS
 from pygame import mixer
 import os
+# from pydub import AudioSegment
 from config import *  # Import all config variables
 
 # fix warning
@@ -16,6 +17,19 @@ import sys
 if sys.platform.startswith("win"):
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
+def save_backup(custom_name=None):
+    if not os.path.exists(backupPath):
+        os.makedirs(backupPath)
+    if custom_name:
+        backup_name = f"{backupPath}/{custom_name}.md"
+    else:
+        timestamp = time.strftime("%Y%m%d-%H%M%S")
+        backup_name = f"{backupPath}/output_backup_{timestamp}.md"
+    
+    with open(outputFile, 'r', encoding='utf-8') as source:
+        with open(backup_name, 'w', encoding='utf-8') as backup:
+            backup.write(source.read())
+    return backup_name
 def clearFile():
     open(outputFile, 'w', encoding='utf-8')
 
@@ -130,33 +144,42 @@ def main(queue,outputText,commandToSound):
             time.sleep(1)
         else:
             res = req if req else queue.get()
-            print(res)
 
-            if res not in commands:
-                response = requestTextAI(res)
-                outputText.put(response)
-                wright(response)
-                wright('------------')
-            else:
-                if res in muteCommands:
+            try:
+                firstWord = res.split(' ', 1)[0]
+            except:
+                firstWord = None
+
+            if firstWord in commands:
+                command = firstWord
+                if command in muteCommands:
                     wright('stop')
                     commandToSound.put('stop')
-                elif res in voiceCommands:
+                elif command in voiceCommands:
                     wright('MUTE')
                     commandToSound.put('-mute')
-                elif res in clearCommands:
+                elif command in clearCommands:
                     clearFile()
-                elif res in restartZapretCommands:
+                elif command in restartZapretCommands:
                     wright('Restarting zapret program...')
                     # Kill existing process if running
                     os.system(f'taskkill /F /IM {os.path.basename(zapretProcess)}')
                     # Start new instance
                     os.startfile(zapretPath)
-                wright('------------')
+                elif command in saveCommands:
+                    custom_name = res.split(' ', 1)[1] if ' ' in res else None
+                    backup_file = save_backup(custom_name)
+                    wright(f'Backup saved as: {backup_file}')
+            else:
+                response = requestTextAI(res)
+                outputText.put(response)
+                wright(response)
+
+            wright('------------')
 
 
 # some boring converting
-commands = muteCommands+voiceCommands+clearCommands+saveCommands+restartZapretCommands
+commands = muteCommands+voiceCommands+clearCommands+saveCommands+restartZapretCommands+saveCommands
 wakeWordStr = ",".join(f'"{item}"' for item in wakeWord)
 baitWordsStr = ",".join(f'"{item}"' for item in baitWords)
 muteCommandsStr = ",".join(f'"{item}"' for item in muteCommands)

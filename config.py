@@ -9,6 +9,8 @@ outputFile = 'output.md'
 
 # process paths
 zapretProcess = 'C:/Users/nobid/Downloads/Discord_zapret_with_voice_update_2/bin'
+backupPath = 'backups'
+
 
 # Assistant settings
 wakeWord = ["джарвис"]
