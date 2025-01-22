@@ -1,5 +1,7 @@
 import os
 
+# toDo config
+
 # System paths
 voskModelPath = 'C:/work/AI/vosk-model-small-ru-0.22'
 zapretPath = 'C:/Users/nobid/Downloads/Discord_zapret_with_voice_update_2/UltimateFix.bat'
@@ -37,3 +39,7 @@ soundStart = '' # 'sounds/rocket.wav'
 
 # Audio settings
 AUDIO_FREQUENCY = 53040
+
+# Context memory settings
+MAX_CONTEXT_LENGTH = 5  # Maximum number of message pairs to remember
+CONTEXT_FILE = "context_memory.json"

@@ -10,12 +10,24 @@ from pygame import mixer
 import os
 from pydub import AudioSegment
 from config import *  # Import all config variables
+import json
 
 # fix warning
 import asyncio
 import sys
 if sys.platform.startswith("win"):
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+def load_context():
+    try:
+        with open(CONTEXT_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except:
+        return []
+
+def save_context(context):
+    with open(CONTEXT_FILE, 'w', encoding='utf-8') as f:
+        json.dump(context, f, ensure_ascii=False, indent=2)
 
 def save_backup(custom_name=None):
     if not os.path.exists(backupPath):
@@ -95,7 +107,8 @@ def tts(inpText, inpCommand):
             time.sleep(1)
 
 
-def requestTextAI(request,fastMode=False,precise=False):
+def requestTextAI(request, fastMode=False, precise=False):
+    context = load_context()
     wright(f'request: {request}',log=True)
     wright('*Loading...*')
     models = ['gpt-4','gpt-3.5-turbo','gpt-4o']
@@ -104,18 +117,32 @@ def requestTextAI(request,fastMode=False,precise=False):
         models = ['gpt-3.5-turbo','gpt-4o''gpt-4',]
     if precise == True:
         content = 'точный компьютер, который отвечает только по делу'
+    
+    messages = [{"role": "system", "content": content}]
+    # Add context messages
+    for msg in context[-MAX_CONTEXT_LENGTH:]:
+        messages.append({"role": "user", "content": msg["user"]})
+        messages.append({"role": "assistant", "content": msg["assistant"]})
+    messages.append({"role": "user", "content": request})
+
     for model in models:
         try:
             response = client.chat.completions.create(
                 model=model,
-                messages=[
-                    {"role": "system", "content": content},
-                    {"role": "user", "content": request}
-                ],
+                messages=messages,
                 web_search = True,
                 temperature=0.7,
             )
-            return response.choices[0].message.content
+            response_text = response.choices[0].message.content
+            
+            # Save new context
+            context.append({
+                "user": request,
+                "assistant": response_text
+            })
+            save_context(context)
+            
+            return response_text
         except:
             wright('Get Response Failed', log=True)
             pass
