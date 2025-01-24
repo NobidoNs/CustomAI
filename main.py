@@ -174,7 +174,7 @@ def listenCommand(queue):
                   listenAll(time.time(),queue)
                   wright('OFF')
                 #   tts('отключаюсь')
-            elif res in muteCommands:
+            elif res in commands['muteCommands']:
                 queue.put(res)
 
 def main(queue,outputText,commandToSound):
@@ -196,39 +196,45 @@ def main(queue,outputText,commandToSound):
                         firstWord = i
             except:
                 firstWord = None
-
-            if firstWord in commands:
+            print(allCommands,firstWord)
+            if firstWord in allCommands:
                 command = firstWord
                 argument = res.split(' ', 1)[1] if ' ' in res else None
-                if command in muteCommands:
+                if command in commands['muteCommands']:
                     wright('stop')
                     commandToSound.put('stop')
 
-                elif command in voiceCommands:
+                elif command in commands['voiceCommands']:
                     wright('MUTE')
                     commandToSound.put('-mute')
 
-                elif command in clearCommands:
+                elif command in commands['clearCommands']:
                     clearFile()
+                    continue
 
-                elif command in restartZapretCommands:
+                elif command in commands['restartZapretCommands']:
                     wright('Restarting zapret program...')
                     # Kill existing process if running
                     os.system(f'taskkill /F /IM {os.path.basename(zapretProcess)}')
                     # Start new instance
                     os.startfile(zapretPath)
 
-                elif command in saveCommands:
+                elif command in commands['saveCommands']:
                     backup_file = save_backup(argument)
                     wright(f'Backup saved as: {backup_file}')
 
-                elif command in setSpeedCommands:
+                elif command in commands['setSpeedCommands']:
                     commandToSound.put(f'-speed {argument}')
 
-                elif command in upSpeedCommands:
+                elif command in commands['upSpeedCommands']:
                     commandToSound.put(f'-speed up')
-                elif command in downSpeedCommands:
+                elif command in commands['downSpeedCommands']:
                     commandToSound.put(f'-speed down')
+                
+                elif command in commands['clearContextCommands']:
+                    with open(CONTEXT_FILE, 'w', encoding='utf-8') as f:
+                        json.dump([], f)
+                    wright('Context cleared')
             else:
                 response = requestTextAI(res)
                 outputText.put(response)
@@ -238,11 +244,16 @@ def main(queue,outputText,commandToSound):
 
 
 # some boring converting
-commands = muteCommands+voiceCommands+clearCommands+saveCommands+restartZapretCommands+saveCommands+setSpeedCommands+upSpeedCommands+downSpeedCommands
 wakeWordStr = ",".join(f'"{item}"' for item in wakeWord)
 baitWordsStr = ",".join(f'"{item}"' for item in baitWords)
-muteCommandsStr = ",".join(f'"{item}"' for item in muteCommands)
+muteCommandsStr = ",".join(f'"{item}"' for item in commands['muteCommands'])
 recognitionWords = f'[{wakeWordStr},{baitWordsStr},{muteCommandsStr}]'
+
+allCommands=[]
+for group in commands.values():
+    for command in group:
+        allCommands.append(command)
+
 
 # import vosk model
 model = Model(voskModelPath)

@@ -21,14 +21,17 @@ waitTime = 7
 wrightLog = False
 
 # Command lists
-muteCommands = ["тихо", "хватит", "стоп", "молчи", "-stop", "-стоп"]
-voiceCommands = ["-mute"]
-clearCommands = ["-cli", "-cls"]
-saveCommands = ["-save"]
-restartZapretCommands = ["-zapret", "-yt", "-ds"]
-setSpeedCommands = ["-speed","-x","-X"]
-upSpeedCommands = ["давай быстрее", "говори быстрее"]
-downSpeedCommands = ["давай помедленней", "слишком быстро", "говори медленнее"]
+commands = {
+  "muteCommands" : ["тихо", "хватит", "стоп", "молчи", "-stop", "-стоп"],
+  "voiceCommands" : ["-mute"],
+  "clearCommands" : ["-cli", "-cls"],
+  "saveCommands" : ["-save"],
+  "restartZapretCommands" : ["-zapret", "-yt", "-ds"],
+  "setSpeedCommands" : ["-speed","-x","-X"],
+  "upSpeedCommands" : ["давай быстрее", "говори быстрее"],
+  "downSpeedCommands" : ["давай помедленней", "слишком быстро", "говори медленнее"],
+  "clearContextCommands" : ["-forget", "-fg", "забудь всё", "очисти контекст"]
+}
 
 # File codes
 codes = ['  !', '    !', '\t!']
