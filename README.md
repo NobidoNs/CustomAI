@@ -49,6 +49,7 @@ This is a minimal yet powerful AI assistant designed for home use, built with ne
    cd CustomAI
 2. Install dependencies:
    pip install -r requirements.txt
+   for linux: sudo apt install ffmpeg
 3. (Optional) Install vosk model:
    Install model from https://alphacephei.com/vosk/models 
 4. Run main.py file.

@@ -9,3 +9,9 @@ sounds/
 output.md
 backups/test.md
 piecesAndExamples/TTS_speed.py
+/myenv
+CustomAI.code-workspace
+/__pycache__
+/app/__pycache__
+/app/customCommands/__pycache__
+/app/public/__pycache__
