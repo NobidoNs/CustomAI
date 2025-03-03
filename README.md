@@ -50,9 +50,10 @@ This is a minimal yet powerful AI assistant designed for home use, built with ne
 2. Install dependencies:
    pip install -r requirements.txt
    for linux: sudo apt install ffmpeg
-3. (Optional) Install vosk model:
+   for mac install portaudio
+4. (Optional) Install vosk model:
    Install model from https://alphacephei.com/vosk/models 
-4. Run main.py file.
+5. Run main.py file.
 
 Last simplest configuration: https://github.com/NobidoNs/CustomAI/commit/89e4294d76a01d9c8c6b4fd115cf91d5c99e1642
 
