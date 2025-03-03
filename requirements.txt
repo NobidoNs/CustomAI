@@ -5,3 +5,4 @@ SpeechRecognition
 gtts
 pygame
 asyncio
+pydub
