@@ -9,10 +9,10 @@ def requestTextAI(request, fastMode=False, precise=False):
     context = load_context()
     wright(f'request: {request}',log=True)
     wright('*Loading...*')
-    models = ['gpt-4','gpt-3.5-turbo','gpt-4o']
+    models = ['gpt-4o','gpt-4']
     content=''
     if fastMode == True:
-        models = ['gpt-3.5-turbo','gpt-4o''gpt-4',]
+        models = ['gpt-4o','gpt-4',]
     if precise == True:
         content = 'точный компьютер, который отвечает только по делу'
     

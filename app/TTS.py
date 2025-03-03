@@ -17,9 +17,9 @@ def loadSound(text,speed=1):
 
     mixer.music.load("output.mp3")
 
-def tts(inpText, inpCommand):
+def tts(inpText, inpCommand, condition):
     speed = 1
-    while True:
+    while not condition.is_set():
         if not inpCommand.empty():
             command = inpCommand.get()
             argument = command.split(' ', 1)[1] if ' ' in command else None

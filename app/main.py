@@ -1,6 +1,7 @@
 import time
 import os
 import json
+import sys
 from config import outputFile, codes, stopFind, commands, allCommands, zapretPath, zapretProcess, backupPath, CONTEXT_FILE
 from app.public.wright import wright
 from app.TextAI import requestTextAI
@@ -22,8 +23,8 @@ def requestInFile():
             return ''
     return ''
 
-def main(queue,outputText,commandToSound):
-    while True:
+def main(queue,outputText,commandToSound,condition):
+    while not condition.is_set():
         # await queue
         req = requestInFile()
         if queue.empty() and not req:
@@ -43,12 +44,12 @@ def main(queue,outputText,commandToSound):
                         firstWord = i
             except:
                 firstWord = None
-            
+            print(f'firstWord: {firstWord}')
             # command check
             if firstWord in allCommands:
                 command = firstWord
                 argument = res.split(' ', 1)[1] if ' ' in res else None
-                
+                print(command in commands['exitCommands'])
                 # command logic
                 if command in commands['muteCommands']:
                     wright('stop')
@@ -85,6 +86,10 @@ def main(queue,outputText,commandToSound):
                     with open(CONTEXT_FILE, 'w', encoding='utf-8') as f:
                         json.dump([], f)
                     wright('Context cleared')
+
+                elif command in commands['exitCommands']:
+                    print('Exiting...')
+                    condition.set()
             else:
                 response = requestTextAI(res)
                 outputText.put(response)

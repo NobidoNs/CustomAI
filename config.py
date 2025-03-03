@@ -30,7 +30,8 @@ commands = {
   "setSpeedCommands" : ["-speed","-x","-X"],
   "upSpeedCommands" : ["давай быстрее", "говори быстрее"],
   "downSpeedCommands" : ["давай помедленней", "слишком быстро", "говори медленнее"],
-  "clearContextCommands" : ["-forget", "-fg", "забудь всё", "очисти контекст"]
+  "clearContextCommands" : ["-forget", "-fg", "забудь всё", "очисти контекст"],
+  "exitCommands" : ["-exit", "-quit", "-выход", "-выключить"]
 }
 
 # File codes

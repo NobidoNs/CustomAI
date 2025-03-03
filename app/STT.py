@@ -22,11 +22,11 @@ def listenAll(startTime,queue):
         with sr.Microphone() as source:
             audio = googleRec.listen(source)
 
-def listenCommand(queue):
+def listenCommand(queue,condition):
     print('Listening...')
     recognizer = KaldiRecognizer(model, 16000, recognitionWords)
 
-    while True:
+    while not condition.is_set():
         data = stream.read(8192,False)
         if recognizer.AcceptWaveform(data): 
             res = json.loads(recognizer.Result())["text"]
