@@ -15,3 +15,4 @@ CustomAI.code-workspace
 /app/__pycache__
 /app/customCommands/__pycache__
 /app/public/__pycache__
+output_fast.mp3
