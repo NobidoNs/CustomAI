@@ -3,7 +3,7 @@ import os
 # toDo config
 
 # System paths
-voskModelPath = '/home/nobidon/Документы/GitHub/CustomAI/vosk-model-small-ru-0.22'
+voskModelPath = './vosk-model-small-ru-0.22'
 zapretPath = 'C:/Users/nobid/Downloads/Discord_zapret_with_voice_update_2/UltimateFix.bat'
 
 # File names

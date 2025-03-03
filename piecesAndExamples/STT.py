@@ -3,7 +3,7 @@ import pyaudio
 from vosk import Model, KaldiRecognizer
 
 # Путь к модели Vosk
-model_path = '/home/nobidon/Документы/GitHub/CustomAI/vosk-model-small-ru-0.22'
+model_path = './vosk-model-small-ru-0.22'
 
 if not os.path.exists(model_path):
     print(f"Модель не найдена по пути {model_path}. Скачайте модель с https://alphacephei.com/vosk/models.")
