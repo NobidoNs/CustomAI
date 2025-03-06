@@ -3,8 +3,18 @@ import pyaudio
 import speech_recognition as sr
 import time
 import json
-from config import waitTime, wakeWord, baitWords, commands, voskModelPath
-from app.public.wright import wright
+from app.utils.wright import wright
+
+with open('devolp_config.json', 'r') as file:
+    devolp_config = json.load(file)
+    commands = devolp_config['commands']
+    baitWords = devolp_config['baitWords']
+    voskModelPath = devolp_config['voskModelPath']
+
+with open('config.json', 'r') as file:
+    config = json.load(file)
+    wakeWord = config['wakeWord']
+    waitTime = config['waitTime']
 
 def listenAll(startTime,queue):
     googleRec = sr.Recognizer()
@@ -23,14 +33,13 @@ def listenAll(startTime,queue):
             audio = googleRec.listen(source)
 
 def listenCommand(queue,condition):
-    print('Listening...')
+    wright('Listening...', True)
     recognizer = KaldiRecognizer(model, 16000, recognitionWords)
 
     while not condition.is_set():
         data = stream.read(8192,False)
         if recognizer.AcceptWaveform(data): 
             res = json.loads(recognizer.Result())["text"]
-            print(res)
             if res in wakeWord:
                   wright('ON')
                 #   tts('да')

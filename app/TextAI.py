@@ -1,7 +1,14 @@
 from g4f.client import Client
-from app.public.wright import wright
-from app.public.content import save_context, load_context
-from config import MAX_CONTEXT_LENGTH
+from app.utils.wright import wright
+from app.utils.content import save_context, load_context
+import json
+
+with open('devolp_config.json', 'r') as file:
+    devolp_config = json.load(file)
+
+with open('config.json', 'r') as file:
+    config = json.load(file)
+    MAX_CONTEXT_LENGTH = config['MAX_CONTEXT_LENGTH']
 
 client = Client()
 

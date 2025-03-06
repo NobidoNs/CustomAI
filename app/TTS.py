@@ -1,8 +1,7 @@
 from pygame import mixer
 from gtts import gTTS
 import time
-from app.public.wright import wright
-from config import soundStart, AUDIO_FREQUENCY
+from app.utils.wright import wright
 import tempfile
 import threading
 import queue
@@ -51,8 +50,8 @@ def play_audio(play_event, audio_queue, stop_event, inpCommand):
             # Check commands during playback
             if not inpCommand.empty():
                 command = inpCommand.get()
-                print(f"get command: {command}")
                 if command == "stop":
+                    wright("Stopping audio playback.", True)
                     mixer.music.stop()
                     stop_event.set()
                     break
@@ -77,7 +76,7 @@ def tts(inpText, inpCommand, condition):
             argument = command.split(' ', 1)[1] if ' ' in command else None
             if command == "stop":
                 mixer.music.stop()
-                print("Stopping audio playback.")
+                wright("Stopping audio playback.", True)
                 stop_event.set()
             elif command == "-mute":
                 break
@@ -104,7 +103,6 @@ def tts(inpText, inpCommand, condition):
                 for chank in chanks:
                     res_text_parts.append(chank)
             text_parts = res_text_parts
-            print(text_parts)
 
             # Запускаем поток воспроизведения
             play_thread = threading.Thread(target=play_audio, args=(play_event, audio_queue, stop_event, inpCommand), daemon=True)

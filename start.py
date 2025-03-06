@@ -1,16 +1,24 @@
 import queue
 import threading
+import time
+import json
+from pygame import mixer
+from app.utils import wright
 from app.STT import listenCommand
 from app.main import main
 from app.TTS import tts
-import time
+
+with open('config.json', 'r') as file:
+    config = json.load(file)
+    soundStart = config['soundStart']
 
 # to run start sound
-# try:
-#     mixer.music.load(soundStart)
-#     mixer.music.play()
-# except:
-#     pass
+if soundStart:
+    try:
+        mixer.music.load(soundStart)
+        mixer.music.play()
+    except:
+        wright("Error loading soundStart", True)
 
 condition = threading.Event()
 if __name__ == "__main__":

@@ -1,13 +1,18 @@
 import time
 import os
 import json
-import sys
-from config import outputFile, codes, stopFind, commands, allCommands, zapretPath, zapretProcess, backupPath, CONTEXT_FILE
-from app.public.wright import wright
+from config import allCommands
+from app.utils.wright import wright
 from app.TextAI import requestTextAI
 from app.customCommands.saveBackup import saveBackup
 from app.customCommands.clearFile import clearFile
 from app.customCommands.show_backups import show_backups
+
+with open('config.json', 'r') as file:
+    config = json.load(file)
+    useZapret = config['useZapret']
+    zapretPath = config['zapretPath']
+    zapretProcess = config['zapretProcess']
 
 def requestInFile():
     with open(outputFile, 'r', encoding='utf-8') as file:
@@ -45,7 +50,7 @@ def main(queue,outputText,commandToSound,condition):
                         firstWord = i
             except:
                 firstWord = None
-            print(f'firstWord: {firstWord}')
+
             # command check
             if firstWord in allCommands or res in allCommands:
                 command = firstWord
@@ -65,11 +70,17 @@ def main(queue,outputText,commandToSound,condition):
                     continue
 
                 elif command in commands['restartZapretCommands']:
-                    wright('Restarting zapret program...')
-                    # Kill existing process if running
-                    os.system(f'taskkill /F /IM {os.path.basename(zapretProcess)}')
-                    # Start new instance
-                    os.startfile(zapretPath)
+                    if useZapret:
+                        try:
+                            wright('Restarting zapret program...')
+                            # Kill existing process if running
+                            os.system(f'taskkill /F /IM {os.path.basename(zapretProcess)}')
+                            # Start new instance
+                            os.startfile(zapretPath)
+                        except:
+                            wright('Failed to restart zapret program')
+                    else:
+                        wright('Zapret is not enabled in config.json')
 
                 elif command in commands['saveCommands']:
                     backup_file = saveBackup(argument)
@@ -89,7 +100,6 @@ def main(queue,outputText,commandToSound,condition):
                     wright('Context cleared')
 
                 elif command in commands['exitCommands']:
-                    print('Exiting...')
                     condition.set()
 
                 elif command in commands['branchCommands']:
