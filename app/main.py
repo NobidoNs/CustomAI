@@ -7,6 +7,7 @@ from app.public.wright import wright
 from app.TextAI import requestTextAI
 from app.customCommands.saveBackup import saveBackup
 from app.customCommands.clearFile import clearFile
+from app.customCommands.show_backups import show_backups
 
 def requestInFile():
     with open(outputFile, 'r', encoding='utf-8') as file:
@@ -46,10 +47,10 @@ def main(queue,outputText,commandToSound,condition):
                 firstWord = None
             print(f'firstWord: {firstWord}')
             # command check
-            if firstWord in allCommands:
+            if firstWord in allCommands or res in allCommands:
                 command = firstWord
                 argument = res.split(' ', 1)[1] if ' ' in res else None
-                print(command in commands['exitCommands'])
+
                 # command logic
                 if command in commands['muteCommands']:
                     wright('stop')
@@ -90,6 +91,9 @@ def main(queue,outputText,commandToSound,condition):
                 elif command in commands['exitCommands']:
                     print('Exiting...')
                     condition.set()
+
+                elif command in commands['branchCommands']:
+                    show_backups()
             else:
                 response = requestTextAI(res)
                 outputText.put(response)
