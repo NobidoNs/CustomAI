@@ -1,0 +1,9 @@
+{
+    "wakeWord" : ["джарвис"],
+    "waitTime" : 7,
+    "soundStart" : "",
+    "MAX_CONTEXT_LENGTH" : 5,
+    "useZapret" : "False",
+    "zapretPath" : "",
+    "zapretProcess" : ""
+}
