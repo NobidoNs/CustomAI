@@ -7,6 +7,11 @@ import threading
 import queue
 import os
 import re
+import json
+
+with open('devolp_config.json', 'r') as file:
+  devolp_config = json.load(file)
+  AUDIO_FREQUENCY = devolp_config["AUDIO_FREQUENCY"]
 
 def text_cleaner(text):
     text = re.sub(r'[^a-zA-Zа-яА-Я0-9\s\.,!?+-]', '', text)

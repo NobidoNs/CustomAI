@@ -18,3 +18,6 @@ CustomAI.code-workspace
 output_fast.mp3
 output.md
 context_memory.json
+/app/utils/__pycache__
+app/utils/__pycache__/content.cpython-311.pyc
+/app/utils/__pycache__

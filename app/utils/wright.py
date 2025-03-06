@@ -1,5 +1,9 @@
 import json
-from config import outputFile, wrightLog
+
+with open('devolp_config.json', 'r') as file:
+    devolp_config = json.load(file)
+    outputFile = devolp_config['outputFile']
+    wrightLog = devolp_config['wrightLog']
 
 def wright(text,log=False):
     print(text)

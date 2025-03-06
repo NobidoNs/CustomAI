@@ -1,5 +1,8 @@
 import json
-from config import CONTEXT_FILE
+
+with open('devolp_config.json', 'r') as file:
+    devolp_config = json.load(file)
+    CONTEXT_FILE = devolp_config['CONTEXT_FILE']
 
 def save_context(context):
     with open(CONTEXT_FILE, 'w', encoding='utf-8') as f:

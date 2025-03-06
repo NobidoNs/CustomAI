@@ -8,6 +8,14 @@ from app.customCommands.saveBackup import saveBackup
 from app.customCommands.clearFile import clearFile
 from app.customCommands.show_backups import show_backups
 
+with open('devolp_config.json', 'r') as file:
+    devolp_config = json.load(file)
+    outputFile = devolp_config['outputFile']
+    codes = devolp_config['codes']
+    stopFind = devolp_config['stopFind']
+    commands = devolp_config['commands']
+    CONTEXT_FILE  = devolp_config['CONTEXT_FILE']
+
 with open('config.json', 'r') as file:
     config = json.load(file)
     useZapret = config['useZapret']

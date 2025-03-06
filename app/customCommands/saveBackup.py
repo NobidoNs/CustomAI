@@ -1,6 +1,11 @@
 import os
 import time
-from config import backupPath, outputFile
+import json
+
+with open('devolp_config.json', 'r') as file:
+    devolp_config = json.load(file)
+    backupPath = devolp_config['backupPath']
+    outputFile = devolp_config['outputFile']
 
 def saveBackup(custom_name=None):
     if not os.path.exists(backupPath):
