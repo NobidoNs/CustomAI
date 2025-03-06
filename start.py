@@ -7,7 +7,7 @@ from app.utils import wright
 from app.STT import listenCommand
 from app.main import main
 from app.TTS import tts
-
+# hi
 with open('config.json', 'r') as file:
     config = json.load(file)
     soundStart = config['soundStart']
