@@ -31,7 +31,9 @@ commands = {
   "upSpeedCommands" : ["давай быстрее", "говори быстрее"],
   "downSpeedCommands" : ["давай помедленней", "слишком быстро", "говори медленнее"],
   "clearContextCommands" : ["-forget", "-fg", "забудь всё", "очисти контекст"],
-  "exitCommands" : ["-exit", "-quit", "-выход", "-выключить"]
+  "exitCommands" : ["-exit", "-quit", "-выход", "-выключить"],
+  "helpCommands" : ["-help", "-помощь", "-команды", "-commands"],
+  "branchCommands" : ["-branch", "-branches", "-ветки", "покахи ветки"],
 }
 
 # File codes
