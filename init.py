@@ -24,9 +24,11 @@ def run_init():
 
     if input("Использовать настройку по умолчанию? (Y/n): ").strip().lower() == "n":
         config['wakeWord'] = input("Введите слово (имя) для активации: ")
-        config['waitTime'] = int(input("Введите время ожидания голосового ввода (в секундах): "))
-        
+        wt =  int(input("Введите время ожидания голосового ввода (в секундах): "))
+        if wt:
+            config['waitTime'] = wt
         if input("Использовать звук старта? (Y/n): ").strip().lower() == "n":
+            config['soundStart'] = ''
             if input("Использовать собственный звук старта? (y/N): ").strip().lower() == "y":
                 config['soundStart'] = input("Введите путь к звуку: ")
         

@@ -5,7 +5,7 @@
     "waitTime": 7,
     "soundStart": "sounds/roket",
     "MAX_CONTEXT_LENGTH": 5,
-    "useZapret": "False",
+    "useZapret": false,
     "zapretPath": "",
     "zapretProcess": ""
 }
