@@ -3,6 +3,7 @@ import threading
 import time
 import json
 from pygame import mixer
+from init import run_init
 from app.utils.wright import wright
 from app.STT import listenCommand
 from app.main import main
@@ -11,6 +12,13 @@ from app.TTS import tts
 with open('config.json', 'r') as file:
     config = json.load(file)
     soundStart = config['soundStart']
+
+with open('devolp_config.json', 'r') as file:
+    devolp_config = json.load(file)
+    init = devolp_config['init']
+
+if not init:
+    run_init()
 
 # to run start sound
 if soundStart:
