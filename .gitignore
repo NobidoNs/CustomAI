@@ -13,4 +13,4 @@ CustomAI.code-workspace
 output_fast.mp3
 context_memory.json
 **/__pycache__
-
+draw.py
