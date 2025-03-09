@@ -1,6 +1,7 @@
 from vosk import Model, KaldiRecognizer
 import pyaudio
 import json
+import time
 import numpy as np
 
 def amplify_audio(audio_data, factor=5.0):  # Увеличение громкости в 2 раза
@@ -32,10 +33,11 @@ while True:
                 print(result["text"])
             if "text" in result and (result["text"] == "джарвис" or result["text"] == "джавис"):
                 print("✅ Активационная фраза 'Джарвис' найдена!")
+                print(time.time()-start)
         else:
             partial_result = json.loads(recognizer.PartialResult())
-            print(partial_result)
+            # print(partial_result)
             if "partial" in partial_result and (partial_result["partial"] == "джарвис" or partial_result["partial"] == "джавис"):
                 print("✅ (БЫСТРО) Джарвис распознан частично!")
-
+                start = time.time()
 
