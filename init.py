@@ -51,5 +51,3 @@ def run_init():
     
     with open('devolp_config.json', 'w') as file:
         json.dump(devolp_config, file, indent=4, ensure_ascii=False)
-
-run_init()

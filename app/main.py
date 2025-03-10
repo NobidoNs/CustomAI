@@ -7,6 +7,7 @@ from app.TextAI import requestTextAI
 from app.customCommands.saveBackup import saveBackup
 from app.customCommands.clearFile import clearFile
 from app.customCommands.show_backups import show_backups
+from app.customCommands.whatYouCan import text_commands_help, voice_commands_help
 
 with open('devolp_config.json', 'r') as file:
     devolp_config = json.load(file)
@@ -112,6 +113,14 @@ def main(queue,outputText,commandToSound,condition):
 
                 elif command in commands['branchCommands']:
                     show_backups()
+
+                elif command in commands['helpCommands']:
+                    text_help = text_commands_help()
+                    outputText.put(text_help)
+                
+                elif command in commands['aboutCommands']:
+                    voice_help = voice_commands_help()
+                    outputText.put(voice_help)
             else:
                 response = requestTextAI(res)
                 outputText.put(response)

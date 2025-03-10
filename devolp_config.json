@@ -1,5 +1,5 @@
 {
-    "init": false,
+    "init": true,
     "commands": {
         "muteCommands": [
             "тихо",
@@ -49,6 +49,23 @@
             "-quit",
             "-выход",
             "-выключить"
+        ],
+        "branchCommands": [
+            "-branch",
+            "-branches",
+            "-branchs",
+            "branch",
+            "ветки",
+            "ветка"
+        ],
+        "helpCommands": [
+            "-help",
+            "--help"
+        ],
+        "aboutCommands": [
+            "что ты умеешь",
+            "что умеешь",
+            "расскажи о себе"
         ]
     },
     "outputFile": "output.md",
