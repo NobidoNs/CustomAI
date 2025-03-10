@@ -5,9 +5,10 @@ import json
 from pygame import mixer
 from init import run_init
 from app.utils.wright import wright
-from app.STT import listenCommand
+from app.STT import listenCommand, makeStream
 from app.main import main
 from app.TTS import tts
+import asyncio
 
 with open('config.json', 'r') as file:
     config = json.load(file)
@@ -30,11 +31,15 @@ if soundStart:
 
 condition = threading.Event()
 if __name__ == "__main__":
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
     myQueue = queue.Queue()
     outputText = queue.Queue()
     commandToSound = queue.Queue()
 
-    listenThread = threading.Thread(target=listenCommand, args=(myQueue,condition))
+    stream = makeStream()
+
+    listenThread = threading.Thread(target=listenCommand, args=(myQueue,condition,stream))
     mainThread = threading.Thread(target=main, args=(myQueue, outputText, commandToSound,condition))
     ttsThread = threading.Thread(target=tts, args=(outputText, commandToSound,condition))
 
