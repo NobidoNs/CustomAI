@@ -2,7 +2,7 @@ import os
 import time
 import json
 
-with open('devolp_config.json', 'r') as file:
+with open('devolp_config.json', 'r', encoding='utf-8') as file:
     devolp_config = json.load(file)
     backupPath = devolp_config['backupPath']
     outputFile = devolp_config['outputFile']

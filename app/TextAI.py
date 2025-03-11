@@ -3,10 +3,7 @@ from app.utils.wright import wright
 from app.utils.content import save_context, load_context
 import json
 
-with open('devolp_config.json', 'r') as file:
-    devolp_config = json.load(file)
-
-with open('config.json', 'r') as file:
+with open('config.json', 'r', encoding='utf-8') as file:
     config = json.load(file)
     MAX_CONTEXT_LENGTH = config['MAX_CONTEXT_LENGTH']
 
@@ -37,7 +34,7 @@ def requestTextAI(request, fastMode=False, precise=False):
             response = client.chat.completions.create(
                 model=model,
                 messages=messages,
-                web_search = True,
+                web_search = False,
                 temperature=0.7,
             )
             response_text = response.choices[0].message.content
