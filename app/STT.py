@@ -68,7 +68,6 @@ def listenCommand(queue,condition,stream):
         if rec.AcceptWaveform(data): 
             res = json.loads(rec.Result())['text']
             print(res)
-            print(wakeWord)
             if res in wakeWord:
                 wright('ON')
                 listenAll(time.time(),queue)

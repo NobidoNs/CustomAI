@@ -9,7 +9,7 @@ from app.customCommands.clearFile import clearFile
 from app.customCommands.show_backups import show_backups
 from app.customCommands.whatYouCan import text_commands_help, voice_commands_help
 
-with open('devolp_config.json', 'r') as file:
+with open('devolp_config.json', 'r', encoding='utf-8') as file:
     devolp_config = json.load(file)
     outputFile = devolp_config['outputFile']
     codes = devolp_config['codes']
@@ -17,7 +17,7 @@ with open('devolp_config.json', 'r') as file:
     commands = devolp_config['commands']
     CONTEXT_FILE  = devolp_config['CONTEXT_FILE']
 
-with open('config.json', 'r') as file:
+with open('config.json', 'r', encoding='utf-8') as file:
     config = json.load(file)
     useZapret = config['useZapret']
     zapretPath = config['zapretPath']

@@ -1,6 +1,6 @@
 import json
 
-with open('devolp_config.json', 'r') as file:
+with open('devolp_config.json', 'r', encoding='utf-8') as file:
     devolp_config = json.load(file)
     outputFile = devolp_config['outputFile']
     wrightLog = devolp_config['wrightLog']

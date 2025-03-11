@@ -1,7 +1,7 @@
 import json
 
 try:
-    with open('config.json', 'r+') as file:
+    with open('config.json', 'r+', encoding='utf-8') as file:
         config = json.load(file)
 except:
     print("Не удалось загрузить файл config.json")
@@ -9,7 +9,7 @@ except:
     exit()
 
 try:
-    with open('devolp_config.json', 'r+') as file:
+    with open('devolp_config.json', 'r+', encoding='utf-8') as file:
         devolp_config = json.load(file)
 except:
     print("Не удалось загрузить файл devolp_config.json")
@@ -46,8 +46,8 @@ def run_init():
     # Применяем изменения в файлы
     devolp_config["init"] = True
     
-    with open('config.json', 'w') as file:
+    with open('config.json', 'w', encoding='utf-8') as file:
         json.dump(config, file, indent=4, ensure_ascii=False)
     
-    with open('devolp_config.json', 'w') as file:
+    with open('devolp_config.json', 'w', encoding='utf-8') as file:
         json.dump(devolp_config, file, indent=4, ensure_ascii=False)

@@ -10,11 +10,11 @@ from app.main import main
 from app.TTS import tts
 import asyncio
 
-with open('config.json', 'r') as file:
+with open('config.json', 'r', encoding='utf-8') as file:
     config = json.load(file)
     soundStart = config['soundStart']
 
-with open('devolp_config.json', 'r') as file:
+with open('devolp_config.json', 'r', encoding='utf-8') as file:
     devolp_config = json.load(file)
     init = devolp_config['init']
 
