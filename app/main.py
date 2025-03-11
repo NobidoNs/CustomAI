@@ -8,6 +8,7 @@ from app.customCommands.saveBackup import saveBackup
 from app.customCommands.clearFile import clearFile
 from app.customCommands.show_backups import show_backups
 from app.customCommands.whatYouCan import text_commands_help, voice_commands_help
+from app.customCommands.timer import timer
 
 with open('devolp_config.json', 'r') as file:
     devolp_config = json.load(file)
@@ -121,6 +122,9 @@ def main(queue,outputText,commandToSound,condition):
                 elif command in commands['aboutCommands']:
                     voice_help = voice_commands_help()
                     outputText.put(voice_help)
+                
+                # elif command in commands['timerCCommands']:
+                #     timer()
             else:
                 response = requestTextAI(res)
                 outputText.put(response)
