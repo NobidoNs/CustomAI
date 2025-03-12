@@ -7,8 +7,10 @@ from app.TextAI import requestTextAI
 from app.customCommands.saveBackup import saveBackup
 from app.customCommands.clearFile import clearFile
 from app.customCommands.show_backups import show_backups
+from app.customCommands.whatYouCan import text_commands_help, voice_commands_help
+from app.customCommands.timer import timer
 
-with open('devolp_config.json', 'r') as file:
+with open('devolp_config.json', 'r', encoding='utf-8') as file:
     devolp_config = json.load(file)
     outputFile = devolp_config['outputFile']
     codes = devolp_config['codes']
@@ -16,7 +18,7 @@ with open('devolp_config.json', 'r') as file:
     commands = devolp_config['commands']
     CONTEXT_FILE  = devolp_config['CONTEXT_FILE']
 
-with open('config.json', 'r') as file:
+with open('config.json', 'r', encoding='utf-8') as file:
     config = json.load(file)
     useZapret = config['useZapret']
     zapretPath = config['zapretPath']
@@ -112,6 +114,17 @@ def main(queue,outputText,commandToSound,condition):
 
                 elif command in commands['branchCommands']:
                     show_backups()
+
+                elif command in commands['helpCommands']:
+                    text_help = text_commands_help()
+                    outputText.put(text_help)
+                
+                elif command in commands['aboutCommands']:
+                    voice_help = voice_commands_help()
+                    outputText.put(voice_help)
+                
+                # elif command in commands['timerCCommands']:
+                #     timer()
             else:
                 response = requestTextAI(res)
                 outputText.put(response)

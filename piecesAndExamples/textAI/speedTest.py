@@ -13,7 +13,7 @@ for i in range(requests):
     start_time = time.time()
     
     response = client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-4",
         messages=[
             {"role": "system", "content": "точный компьютер, который отвечает только по делу"},
             {"role": "user", "content": random.randint(1,100)}

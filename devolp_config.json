@@ -1,72 +1,40 @@
 {
-    "init": false,
-    "commands": {
-        "muteCommands": [
-            "тихо",
-            "хватит",
-            "стоп",
-            "молчи",
-            "-stop",
-            "-стоп"
-        ],
-        "voiceCommands": [
-            "-mute"
-        ],
-        "clearCommands": [
-            "-cli",
-            "-cls"
-        ],
-        "saveCommands": [
-            "-save"
-        ],
-        "restartZapretCommands": [
-            "-zapret",
-            "-yt",
-            "-ds"
-        ],
-        "setSpeedCommands": [
-            "-speed",
-            "-x",
-            "-X"
-        ],
-        "upSpeedCommands": [
-            "давай быстрее",
-            "говори быстрее"
-        ],
-        "downSpeedCommands": [
-            "давай помедленней",
-            "слишком быстро",
-            "говори медленнее"
-        ],
-        "clearContextCommands": [
-            "-forget",
-            "-fg",
-            "забудь всё",
-            "очисти контекст"
-        ],
-        "exitCommands": [
-            "-exit",
-            "-quit",
-            "-выход",
-            "-выключить"
-        ]
-    },
-    "outputFile": "output.md",
-    "backupPath": "backups",
-    "voskModelPath": "./vosk-model-small-ru-0.22",
-    "baitWords": [
-        "вис"
-    ],
-    "wrightLog": "False",
-    "codes": [
-        "  !",
-        "    !",
-        "\t!"
-    ],
-    "stopFind": [
-        "------------",
-        "*Loading...*"
-    ],
-    "AUDIO_FREQUENCY": 53040,
-    "CONTEXT_FILE": "context_memory.json"
+	"init": true,
+	"commands": {
+		"muteCommands": ["тихо", "хватит", "стоп", "молчи", "-stop", "-стоп"],
+		"voiceCommands": ["-mute"],
+		"clearCommands": ["-cli", "-cls"],
+		"saveCommands": ["-save"],
+		"restartZapretCommands": ["-zapret", "-yt", "-ds"],
+		"setSpeedCommands": ["-speed", "-x", "-X"],
+		"upSpeedCommands": ["давай быстрее", "говори быстрее"],
+		"downSpeedCommands": [
+			"давай помедленней",
+			"слишком быстро",
+			"говори медленнее"
+		],
+		"clearContextCommands": ["-forget", "-fg", "забудь всё", "очисти контекст"],
+		"exitCommands": ["-exit", "-quit", "-выход", "-выключить"],
+		"branchCommands": [
+			"-branch",
+			"-branches",
+			"-branchs",
+			"branch",
+			"ветки",
+			"ветка"
+		],
+		"helpCommands": ["-help", "--help"],
+		"aboutCommands": ["что ты умеешь", "что умеешь", "расскажи о себе"],
+		"setTimerCommands": ["-timer", "поставь таймер", "таймер"]
+	},
+	"outputFile": "output.md",
+	"backupPath": "backups",
+	"voskModelPath": "./vosk-model-small-ru-0.22",
+	"baitWords": ["вис"],
+	"wrightLog": "False",
+	"codes": ["  !", "    !", "\t!"],
+	"stopFind": ["------------", "*Loading...*"],
+	"AUDIO_FREQUENCY": 53040,
+	"CONTEXT_FILE": "context_memory.json",
+	"timerSound": "sounds/timer.mp3"
 }
