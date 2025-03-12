@@ -6,9 +6,6 @@ import collections
 import speech_recognition as sr
 import time
 import threading
-import soundfile as sf
-import wave
-import math
 
 # Настройки
 SAMPLE_RATE = 16000
@@ -27,34 +24,20 @@ def is_speech(audio_data):
     volume = np.abs(audio_np).mean()
     return volume > 300
 
-def get_last_seconds_audio(seconds, AB):
-    chunks_needed = int((SAMPLE_RATE * seconds) / BUFFER_SIZE)  # Сколько чанков нужно взять
-    buffer_data = AB
-
-    if len(buffer_data) == 0:
-        print("⚠️ Буфер пуст, нечего извлекать!")
-        return None
-    
+def get_last_seconds_audio(seconds, buffer_data):
+    chunks_needed = int((SAMPLE_RATE * seconds) / BUFFER_SIZE)
     if chunks_needed <= 0 or chunks_needed > len(buffer_data):
         chunks_needed = len(buffer_data) 
-
-    total_samples = len(buffer_data) * BUFFER_SIZE
-    actual_duration = total_samples / SAMPLE_RATE
-    
-    print(f"📊 Audio duration: {actual_duration:.2f} seconds (запрашиваем {seconds} сек)")
-
     audio_data = b''.join(buffer_data[-chunks_needed:])
     return sr.AudioData(audio_data, SAMPLE_RATE, 2)
-
-
 
 def recognize_speech_buffer(audio_buffer, listenTime):
     global googleRec
 
     audio_data = b''.join(audio_buffer)
     audio_data = sr.AudioData(audio_data, SAMPLE_RATE, 2)
-
     audio_data = get_last_seconds_audio(listenTime, audio_buffer)
+
     # with open("TEMPoutputTEMP.wav", "wb") as f:
     #     f.write(audio_data.get_wav_data())
     try:
@@ -71,7 +54,6 @@ recognizer = KaldiRecognizer(model, 16000, '["джарвис", "вь", "в", "в
 audio = pyaudio.PyAudio()
 stream = audio.open(format=pyaudio.paInt16, channels=1, rate=SAMPLE_RATE, input=True, frames_per_buffer=BUFFER_SIZE)
 stream.start_stream()
-
 
 audio_buffer = collections.deque(maxlen=MAX_FRAMES)
 
