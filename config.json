@@ -1,11 +1,9 @@
 {
-    "wakeWord": [
-        "джарвис"
-    ],
-    "waitTime": 7,
-    "soundStart": "sounds/roket",
-    "MAX_CONTEXT_LENGTH": 5,
-    "useZapret": false,
-    "zapretPath": "",
-    "zapretProcess": ""
+	"wakeWord": ["джарвис"],
+	"waitTime": 7,
+	"soundStart": "sounds/load.mp3",
+	"MAX_CONTEXT_LENGTH": 5,
+	"useZapret": false,
+	"zapretPath": "",
+	"zapretProcess": ""
 }

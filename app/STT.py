@@ -127,7 +127,6 @@ def listenCommand(queue,condition,stream): # Listen for wake word and commands
                 for word in badWords:
                     if word in partial_text:
                         threading.Thread(target=playSound, args=('sounds/pep.mp3',), daemon=True).start()    
-                        print("PEP")    
 
         else:
             if partRes and time.time() - last_speech_time > AWAIT_TIME:
