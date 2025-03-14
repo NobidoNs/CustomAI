@@ -100,7 +100,10 @@ def listenCommand(queue,condition,stream): # Listen for wake word and commands
     rec = KaldiRecognizer(model, SAMPLE_RATE, recognitionWords)
 
     partRes = False
+    wake_sound_played = False
     audio_buffer = collections.deque(maxlen=MAX_FRAMES)
+
+    
 
     while not condition.is_set():
         data = stream.read(BUFFER_SIZE, exception_on_overflow=False)
@@ -111,7 +114,6 @@ def listenCommand(queue,condition,stream): # Listen for wake word and commands
             last_speech_time = time.time()
             if rec.AcceptWaveform(data): 
                 res = json.loads(rec.Result())['text']
-                # print(res, commands['muteCommands'])
                 if res in commands['muteCommands']:
                     queue.put(res)
                     partRes = False
@@ -120,9 +122,11 @@ def listenCommand(queue,condition,stream): # Listen for wake word and commands
                 partial_result = json.loads(rec.PartialResult())
                 partial_text = partial_result.get("partial", "")
 
-                if partial_text in wakeWord:
+                if partial_text in wakeWord and not wake_sound_played:
                     partRes = True
                     startListenTime = time.time()
+                    threading.Thread(target=playSound, args=('sounds/analog-button.mp3',), daemon=True).start()
+                    wake_sound_played = True
 
                 for word in badWords:
                     if word in partial_text:
@@ -132,6 +136,8 @@ def listenCommand(queue,condition,stream): # Listen for wake word and commands
             if partRes and time.time() - last_speech_time > AWAIT_TIME:
                 wright('🎤', True)
                 threading.Thread(target=playSound, args=('sounds/caset.mp3',), daemon=True).start()   
-                threading.Thread(target=recognize_speech_buffer, args=(queue, list(audio_buffer),time.time()-startListenTime + 1,), daemon=True).start()
+                threading.Thread(target=recognize_speech_buffer, args=(queue, list(audio_buffer), time.time() - startListenTime + 1,), daemon=True).start()
                 audio_buffer.clear()
                 partRes = False
+                wake_sound_played = False 
+
