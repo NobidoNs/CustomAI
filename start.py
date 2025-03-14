@@ -21,13 +21,6 @@ with open('devolp_config.json', 'r', encoding='utf-8') as file:
 if not init:
     run_init()
 
-# to run start sound
-if soundStart:
-    try:
-        mixer.music.load(soundStart)
-        mixer.music.play()
-    except:
-        wright("Error loading soundStart", True)
 
 condition = threading.Event()
 if __name__ == "__main__":
@@ -46,6 +39,14 @@ if __name__ == "__main__":
     listenThread.start()
     mainThread.start()
     ttsThread.start()
+
+    # to run start sound
+    if soundStart:
+        try:
+            mixer.music.load(soundStart)
+            mixer.music.play()
+        except:
+            wright("Error loading soundStart", True)
 
     try:
         while not condition.is_set():

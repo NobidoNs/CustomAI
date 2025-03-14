@@ -7,7 +7,7 @@ import collections
 import numpy as np
 import threading
 from app.utils.wright import wright
-
+from app.utils.playSound import playSound
 
 # Настройки аудиопотока
 FORMAT = pyaudio.paInt16 
@@ -23,6 +23,7 @@ with open('devolp_config.json', 'r', encoding='utf-8') as file:
     commands = devolp_config['commands']
     baitWords = devolp_config['baitWords']
     voskModelPath = devolp_config['voskModelPath']
+    badWords = devolp_config['badWords']
 
 with open('config.json', 'r', encoding='utf-8') as file:
     config = json.load(file)
@@ -92,7 +93,8 @@ def listenCommand(queue,condition,stream): # Listen for wake word and commands
     wakeWordStr = ",".join(f'"{item}"' for item in wakeWord)
     baitWordsStr = ",".join(f'"{item}"' for item in baitWords)
     muteCommandsStr = ",".join(f'"{item}"' for item in commands['muteCommands'])
-    recognitionWords = f'[{wakeWordStr},{baitWordsStr},{muteCommandsStr}]'
+    badWordsStr = ",".join(f'"{item}"' for item in badWords)
+    recognitionWords = f'[{wakeWordStr},{baitWordsStr},{muteCommandsStr},{badWordsStr}]'
 
     model = Model(voskModelPath)
     rec = KaldiRecognizer(model, SAMPLE_RATE, recognitionWords)
@@ -109,7 +111,7 @@ def listenCommand(queue,condition,stream): # Listen for wake word and commands
             last_speech_time = time.time()
             if rec.AcceptWaveform(data): 
                 res = json.loads(rec.Result())['text']
-                print(res, commands['muteCommands'])
+                # print(res, commands['muteCommands'])
                 if res in commands['muteCommands']:
                     queue.put(res)
                     partRes = False
@@ -121,6 +123,10 @@ def listenCommand(queue,condition,stream): # Listen for wake word and commands
                 if partial_text in wakeWord:
                     partRes = True
                     startListenTime = time.time()
+                
+                for word in badWords:
+                    if word in partial_text:
+                        threading.Thread(target=playSound, args=('sounds/pep.mp3',), daemon=True).start()    
 
         else:
             if partRes and time.time() - last_speech_time > AWAIT_TIME:

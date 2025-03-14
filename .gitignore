@@ -5,7 +5,6 @@ temp3.py
 output.mp3
 output2.mp3
 output.md
-sounds/
 backups/test.md
 piecesAndExamples/TTS_speed.py
 /myenv
@@ -15,3 +14,4 @@ context_memory.json
 **/__pycache__
 draw.py
 /venv
+/temp
