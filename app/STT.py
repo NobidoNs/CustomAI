@@ -123,7 +123,7 @@ def listenCommand(queue,condition,stream): # Listen for wake word and commands
                 if partial_text in wakeWord:
                     partRes = True
                     startListenTime = time.time()
-                
+
                 for word in badWords:
                     if word in partial_text:
                         threading.Thread(target=playSound, args=('sounds/pep.mp3',), daemon=True).start()    
@@ -131,6 +131,7 @@ def listenCommand(queue,condition,stream): # Listen for wake word and commands
         else:
             if partRes and time.time() - last_speech_time > AWAIT_TIME:
                 wright('🎤', True)
+                threading.Thread(target=playSound, args=('sounds/caset.mp3',), daemon=True).start()   
                 threading.Thread(target=recognize_speech_buffer, args=(queue, list(audio_buffer),time.time()-startListenTime + 1,), daemon=True).start()
                 audio_buffer.clear()
                 partRes = False
