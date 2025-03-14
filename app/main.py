@@ -17,7 +17,6 @@ with open('devolp_config.json', 'r', encoding='utf-8') as file:
     stopFind = devolp_config['stopFind']
     commands = devolp_config['commands']
     CONTEXT_FILE  = devolp_config['CONTEXT_FILE']
-    badWords = devolp_config['badWords']
 
 with open('config.json', 'r', encoding='utf-8') as file:
     config = json.load(file)
@@ -123,9 +122,6 @@ def main(queue,outputText,commandToSound,condition):
                 elif command in commands['aboutCommands']:
                     voice_help = voice_commands_help()
                     outputText.put(voice_help)
-
-                elif command in badWords:
-                    outputText.put('говори правильно')
                 
                 # elif command in commands['timerCCommands']:
                 #     timer()

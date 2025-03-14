@@ -7,7 +7,7 @@ import collections
 import numpy as np
 import threading
 from app.utils.wright import wright
-
+from app.utils.playSound import playSound
 
 # Настройки аудиопотока
 FORMAT = pyaudio.paInt16 
@@ -93,7 +93,8 @@ def listenCommand(queue,condition,stream): # Listen for wake word and commands
     wakeWordStr = ",".join(f'"{item}"' for item in wakeWord)
     baitWordsStr = ",".join(f'"{item}"' for item in baitWords)
     muteCommandsStr = ",".join(f'"{item}"' for item in commands['muteCommands'])
-    recognitionWords = f'[{wakeWordStr},{baitWordsStr},{muteCommandsStr},{badWords}]'
+    badWordsStr = ",".join(f'"{item}"' for item in badWords)
+    recognitionWords = f'[{wakeWordStr},{baitWordsStr},{muteCommandsStr},{badWordsStr}]'
 
     model = Model(voskModelPath)
     rec = KaldiRecognizer(model, SAMPLE_RATE, recognitionWords)
@@ -110,7 +111,7 @@ def listenCommand(queue,condition,stream): # Listen for wake word and commands
             last_speech_time = time.time()
             if rec.AcceptWaveform(data): 
                 res = json.loads(rec.Result())['text']
-                print(res, commands['muteCommands'])
+                # print(res, commands['muteCommands'])
                 if res in commands['muteCommands']:
                     queue.put(res)
                     partRes = False
@@ -125,7 +126,8 @@ def listenCommand(queue,condition,stream): # Listen for wake word and commands
                 
                 for word in badWords:
                     if word in partial_text:
-                        queue.put(word)
+                        threading.Thread(target=playSound, args=('sounds/pep.mp3',), daemon=True).start()    
+                        print("PEP")    
 
         else:
             if partRes and time.time() - last_speech_time > AWAIT_TIME:
