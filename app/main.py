@@ -6,9 +6,10 @@ from app.utils.wright import wright
 from app.TextAI import requestTextAI
 from app.customCommands.saveBackup import saveBackup
 from app.customCommands.clearFile import clearFile
-from app.customCommands.show_backups import show_backups
+from app.customCommands.show_branches import show_branches
 from app.customCommands.whatYouCan import text_commands_help, voice_commands_help
 from app.customCommands.timer import timer
+from app.utils.content import load_context, save_context
 
 with open('devolp_config.json', 'r', encoding='utf-8') as file:
     devolp_config = json.load(file)
@@ -23,6 +24,7 @@ with open('config.json', 'r', encoding='utf-8') as file:
     useZapret = config['useZapret']
     zapretPath = config['zapretPath']
     zapretProcess = config['zapretProcess']
+    wakeWord = config['wakeWord']
 
 def requestInFile():
     with open(outputFile, 'r', encoding='utf-8') as file:
@@ -39,7 +41,19 @@ def requestInFile():
             return ''
     return ''
 
+def is_command(phrase, commands):
+    
+    if phrase.split()[0].lower() in wakeWord:
+        phrase = ' '.join(phrase.split()[1:])
+    # print(phrase, phrase.split()[0], wakeWord)
+    if phrase in commands:
+        return phrase, None
+    for cmd in commands:
+        if phrase.startswith(cmd):
+            return cmd, phrase.split(cmd,1)[1]
+    
 def main(queue,outputText,commandToSound,condition):
+    current_branch = "default"
     while not condition.is_set():
         # await queue
         req = requestInFile()
@@ -52,19 +66,18 @@ def main(queue,outputText,commandToSound,condition):
                 res = queue.get()
                 wright(res)
 
-            # can be command
-            try:
-                firstWord = res.split(' ', 1)[0]
-                for i in commands:
-                    if res in i:
-                        firstWord = i
-            except:
-                firstWord = None
+            command = None
+            argument = None
 
-            # command check
-            if firstWord in allCommands or res in allCommands:
-                command = firstWord
-                argument = res.split(' ', 1)[1] if ' ' in res else None
+            for cmd_group in commands.values():
+                try:
+                    command, argument = is_command(res, cmd_group)
+                    break
+                except:
+                    pass
+            # print(command, argument)
+            # can be command
+            if command:
 
                 # command logic
                 if command in commands['muteCommands']:
@@ -105,15 +118,16 @@ def main(queue,outputText,commandToSound,condition):
                     commandToSound.put(f'-speed down')
                 
                 elif command in commands['clearContextCommands']:
-                    with open(CONTEXT_FILE, 'w', encoding='utf-8') as f:
+                    context_file = f"promts/{current_branch}/context.json"
+                    with open(context_file, 'w', encoding='utf-8') as f:
                         json.dump([], f)
-                    wright('Context cleared')
+                    wright(f"Контекст для ветки '{current_branch}' очищен.")
 
                 elif command in commands['exitCommands']:
                     condition.set()
 
                 elif command in commands['branchCommands']:
-                    show_backups()
+                    show_branches()
 
                 elif command in commands['helpCommands']:
                     text_help = text_commands_help()
@@ -122,11 +136,21 @@ def main(queue,outputText,commandToSound,condition):
                 elif command in commands['aboutCommands']:
                     voice_help = voice_commands_help()
                     outputText.put(voice_help)
+
+                elif command in commands['selectBranchCommands']:
+                    print(argument)
+
+                    if argument:
+                        current_branch = argument
+                        wright(f"Текущая ветка изменена на: {current_branch}")
+                    else:
+                        wright("Ошибка: укажите имя ветки для переключения.")
                 
                 # elif command in commands['timerCCommands']:
                 #     timer()
             else:
-                response = requestTextAI(res)
+                pass
+                response = requestTextAI(res, current_branch)
                 outputText.put(response)
                 wright(response)
 

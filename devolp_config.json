@@ -15,14 +15,8 @@
 		],
 		"clearContextCommands": ["-forget", "-fg", "забудь всё", "очисти контекст"],
 		"exitCommands": ["-exit", "-quit", "-выход", "-выключить"],
-		"branchCommands": [
-			"-branch",
-			"-branches",
-			"-branchs",
-			"branch",
-			"ветки",
-			"ветка"
-		],
+		"branchCommands": ["-branches", "-branchs", "ветки", "покажи ветки"],
+		"selectBranchCommands": ["-branch", "ветка", "выбери ветку"],
 		"helpCommands": ["-help", "--help"],
 		"aboutCommands": ["что ты умеешь", "что умеешь", "расскажи о себе"],
 		"setTimerCommands": ["-timer", "поставь таймер", "таймер"]
@@ -62,6 +56,6 @@
 	"codes": ["  !", "    !", "\t!"],
 	"stopFind": ["------------", "*Loading...*"],
 	"AUDIO_FREQUENCY": 53040,
-	"CONTEXT_FILE": "context_memory.json",
+	"CONTEXT_FILE": "promts/context_memory.json",
 	"timerSound": "sounds/timer.mp3"
 }
