@@ -19,7 +19,8 @@
 		"selectBranchCommands": ["-branch", "ветка", "выбери ветку"],
 		"helpCommands": ["-help", "--help"],
 		"aboutCommands": ["что ты умеешь", "что умеешь", "расскажи о себе"],
-		"setTimerCommands": ["-timer", "поставь таймер", "таймер"]
+		"setTimerCommands": ["-timer", "поставь таймер на", "таймер на"],
+		"stopTimerCommands": ["-stop-timer", "останови таймер"]
 	},
 	"outputFile": "output.md",
 	"backupPath": "backups",
@@ -56,6 +57,5 @@
 	"codes": ["  !", "    !", "\t!"],
 	"stopFind": ["------------", "*Loading...*"],
 	"AUDIO_FREQUENCY": 53040,
-	"CONTEXT_FILE": "promts/context_memory.json",
 	"timerSound": "sounds/timer.mp3"
 }

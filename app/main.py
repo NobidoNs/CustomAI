@@ -1,6 +1,7 @@
 import time
 import os
 import json
+import threading
 from config import allCommands
 from app.utils.wright import wright
 from app.TextAI import requestTextAI
@@ -10,6 +11,7 @@ from app.customCommands.show_branches import show_branches
 from app.customCommands.whatYouCan import text_commands_help, voice_commands_help
 from app.customCommands.timer import timer
 from app.utils.content import load_context, save_context
+from app.customAI.timeAI import convertTime
 
 with open('devolp_config.json', 'r', encoding='utf-8') as file:
     devolp_config = json.load(file)
@@ -17,7 +19,6 @@ with open('devolp_config.json', 'r', encoding='utf-8') as file:
     codes = devolp_config['codes']
     stopFind = devolp_config['stopFind']
     commands = devolp_config['commands']
-    CONTEXT_FILE  = devolp_config['CONTEXT_FILE']
 
 with open('config.json', 'r', encoding='utf-8') as file:
     config = json.load(file)
@@ -41,19 +42,22 @@ def requestInFile():
             return ''
     return ''
 
-def is_command(phrase, commands):
+def parse_command(phrase, commands):
     
-    if phrase.split()[0].lower() in wakeWord:
-        phrase = ' '.join(phrase.split()[1:])
+    if phrase.split()[0].lower() in wakeWord or phrase.split()[0].lower() == 'чарльз':
+        phrase = ' '.join(phrase.split()[1:]).lower()
     # print(phrase, phrase.split()[0], wakeWord)
     if phrase in commands:
         return phrase, None
     for cmd in commands:
         if phrase.startswith(cmd):
-            return cmd, phrase.split(cmd,1)[1]
+            # print(cmd, phrase[len(cmd):].strip())
+            return cmd, phrase[len(cmd):].strip()
     
 def main(queue,outputText,commandToSound,condition):
     current_branch = "default"
+    active_timer = None
+    timer_stop_event = threading.Event()
     while not condition.is_set():
         # await queue
         req = requestInFile()
@@ -71,7 +75,7 @@ def main(queue,outputText,commandToSound,condition):
 
             for cmd_group in commands.values():
                 try:
-                    command, argument = is_command(res, cmd_group)
+                    command, argument = parse_command(res, cmd_group)
                     break
                 except:
                     pass
@@ -146,8 +150,29 @@ def main(queue,outputText,commandToSound,condition):
                     else:
                         wright("Ошибка: укажите имя ветки для переключения.")
                 
-                # elif command in commands['timerCCommands']:
-                #     timer()
+                elif command in commands['setTimerCommands']:
+                    if argument:
+                        timer_seconds = convertTime(argument)
+                        if timer_seconds == 0:
+                            wright("Не удалось преобразовать время в секунды.")
+                            continue
+                        if active_timer:
+                            timer_stop_event.set()
+                            active_timer.join() 
+                        timer_stop_event.clear()
+                        wright(f"Таймер установлен на {timer_seconds} секунд.")
+                        active_timer = threading.Thread(target=timer, args=(timer_seconds, timer_stop_event), daemon=True)
+                        active_timer.start()
+                    else:
+                        wright("Ошибка: укажите время для таймера.")
+
+                elif command in commands['stopTimerCommands']:
+                    if active_timer: 
+                        timer_stop_event.set() 
+                        active_timer.join()
+                        wright("Таймер остановлен.")
+                    else:
+                        wright("Таймер не запущен.")
             else:
                 pass
                 response = requestTextAI(res, current_branch)
@@ -155,3 +180,6 @@ def main(queue,outputText,commandToSound,condition):
                 wright(response)
 
             wright('------------')
+    if active_timer:
+        timer_stop_event.set()
+        active_timer.join()
