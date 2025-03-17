@@ -1,6 +1,7 @@
 from g4f.client import Client
 from app.utils.wright import wright
 from app.utils.content import save_context, load_context
+from app.utils.content import load_code_files
 import json
 
 with open('config.json', 'r', encoding='utf-8') as file:
@@ -10,7 +11,6 @@ with open('config.json', 'r', encoding='utf-8') as file:
 client = Client()
 
 def requestTextAI(request, branch, fastMode=False, precise=False): 
-    context = load_context(branch)
     wright(f'request: {request}', log=True)
     wright('*Loading...*')
 
@@ -22,7 +22,16 @@ def requestTextAI(request, branch, fastMode=False, precise=False):
     if precise:
         content = 'точный компьютер, который отвечает только по делу'
 
-    messages = [{"role": "system", "content": content}]
+    context = load_context(branch)
+    if branch == 'code_editing':
+        code_context = load_code_files()
+        messages = [
+            {"role": "system", "content": "Ты опытный программист, анализируй код и помогай с ним. Отвечай на русском"},
+            {"role": "system", "content": code_context}
+        ]
+    else:
+        messages = [{"role": "system", "content": content}]
+        
     for msg in context[-MAX_CONTEXT_LENGTH:]:
         messages.append({"role": "user", "content": msg["user"]}) 
         messages.append({"role": "assistant", "content": msg["assistant"]})

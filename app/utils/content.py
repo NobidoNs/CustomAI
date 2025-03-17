@@ -3,7 +3,6 @@ import os
 
 with open('devolp_config.json', 'r', encoding='utf-8') as file:
     devolp_config = json.load(file)
-    CONTEXT_FILE = devolp_config['CONTEXT_FILE']
 
 BASE_CONTEXT_DIR = 'promts'
 

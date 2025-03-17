@@ -14,6 +14,8 @@ with open('devolp_config.json', 'r', encoding='utf-8') as file:
   AUDIO_FREQUENCY = devolp_config["AUDIO_FREQUENCY"]
 
 def text_cleaner(text):
+    if not text:
+        return ''
     text = re.sub(r'[^a-zA-Zа-яА-Я0-9\s\.,!?+-ё]', '', text)
     text = re.sub(r'\s+', ' ', text)
     text = re.sub(r',+', ',', text)
