@@ -56,6 +56,7 @@ def parse_command(phrase, commands):
     
 def main(queue,outputText,commandToSound,condition):
     current_branch = "default"
+    dialog = "context"
     active_timer = None
     timer_stop_event = threading.Event()
     while not condition.is_set():
@@ -173,9 +174,20 @@ def main(queue,outputText,commandToSound,condition):
                         wright("Таймер остановлен.")
                     else:
                         wright("Таймер не запущен.")
+
+                elif command in commands['newDialogCommands']:
+                    if argument:
+                        context_file = os.path.join('promts', current_branch, f'{argument}.json')
+                        wright(f"Новый диалог создан для ветки '{current_branch}'.")
+                    else:                    
+                        context_file = os.path.join('promts', current_branch, 'newContext.json')
+                        wright("Имя диалога не указано. Оно бутет создано автоматически.")    
+
+                    with open(context_file, 'w', encoding='utf-8') as f:
+                        json.dump([], f)  # Начинаем с пустого контекста                    
             else:
                 pass
-                response = requestTextAI(res, current_branch)
+                response = requestTextAI(res, current_branch, dialog)
                 outputText.put(response)
                 wright(response)
 
@@ -183,3 +195,4 @@ def main(queue,outputText,commandToSound,condition):
     if active_timer:
         timer_stop_event.set()
         active_timer.join()
+    wright("Остановка main", True)

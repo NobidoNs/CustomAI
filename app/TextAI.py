@@ -10,19 +10,21 @@ with open('config.json', 'r', encoding='utf-8') as file:
 
 client = Client()
 
-def requestTextAI(request, branch, fastMode=False, precise=False): 
+def requestTextAI(request, branch, dialog, fastMode=False, precise=False): 
     wright(f'request: {request}', log=True)
     wright('*Loading...*')
 
     models = ["gpt-4", "phi-4", "llama-3.3-70b", "gemini-1.5-flash", "gpt-4o"]
-    content =''
+    content = ''
     
     if fastMode:
         models = ["gpt-4o-mini", "gemini-1.5-flash"]
     if precise:
         content = 'точный компьютер, который отвечает только по делу'
 
-    context = load_context(branch)
+    # Загружаем объединённый контекст (обязательный + основной)
+    context = load_context(branch, dialog)
+
     if branch == 'code_editing':
         code_context = load_code_files()
         messages = [
@@ -32,6 +34,7 @@ def requestTextAI(request, branch, fastMode=False, precise=False):
     else:
         messages = [{"role": "system", "content": content}]
         
+    # Добавляем контекст в запрос
     for msg in context[-MAX_CONTEXT_LENGTH:]:
         messages.append({"role": "user", "content": msg["user"]}) 
         messages.append({"role": "assistant", "content": msg["assistant"]})
@@ -47,6 +50,7 @@ def requestTextAI(request, branch, fastMode=False, precise=False):
             )
             response_text = response.choices[0].message.content   
 
+            # Сохраняем контекст
             context.append({
                 "user": request,
                 "assistant": response_text

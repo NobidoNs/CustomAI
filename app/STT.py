@@ -141,3 +141,4 @@ def listenCommand(queue,condition,stream): # Listen for wake word and commands
                 partRes = False
                 wake_sound_played = False 
 
+    wright("Остановка STT", True)

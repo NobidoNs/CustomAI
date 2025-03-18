@@ -16,14 +16,30 @@ def save_context(context, branch):
     with open(context_file, 'w', encoding='utf-8') as f:
         json.dump(context, f, ensure_ascii=False, indent=2)       
 
-def load_context(branch):
-    # Загружаем контекст из соответствующей папки
-    context_file = os.path.join(BASE_CONTEXT_DIR, branch, 'context.json')
+def load_context(branch, dialog):
+    # Путь к основному контексту
+    context_file = os.path.join(BASE_CONTEXT_DIR, branch, f'{dialog}.json')
+
+    # Путь к обязательному контексту
+    mandatory_context_file = os.path.join(BASE_CONTEXT_DIR, branch, 'mandatory_context.json')
+
+    # Загружаем основной контекст
     try:
-        with open(context_file, 'r', encoding='utf-8') as f:      
-            return json.load(f)
+        with open(context_file, 'r', encoding='utf-8') as f:
+            context = json.load(f)
     except FileNotFoundError:
-        return []  # Если файла нет, возвращаем пустой список
+        context = []  # Если файла нет, возвращаем пустой список
+    
+    # Загружаем обязательный контекст
+    mandatory_context = []
+    try:
+        with open(mandatory_context_file, 'r', encoding='utf-8') as f:
+            mandatory_context = json.load(f)
+    except FileNotFoundError:
+        pass  # Если файла нет, просто игнорируем
+
+    # Объединяем обязательный контекст с основным
+    return mandatory_context + context
 
 def load_code_files():
     code_context = []

@@ -129,6 +129,6 @@ def tts(inpText, inpCommand, condition):
 
             play_thread.join()
     
-
+    wright("Остановка TTS", True)
 # sound init 
 mixer.init(frequency=AUDIO_FREQUENCY) # the sound seems to have changed
