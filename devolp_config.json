@@ -25,6 +25,14 @@
 			"создай чат",
 			"создай диалог"
 		],
+		"restoreDialogsCommands": ["-restore-dialogue", "восстанови диалог"],
+		"showDialogsCommands": [
+			"-restore-dialogue",
+			"покажи диалоги",
+			"диалоги",
+			"чаты",
+			"покажи чаты"
+		],
 		"exitCommands": ["-exit", "-quit", "-выход", "-выключить"],
 		"branchCommands": ["-branches", "-branchs", "ветки", "покажи ветки"],
 		"selectBranchCommands": ["-branch", "ветка", "выбери ветку"],

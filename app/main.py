@@ -12,6 +12,8 @@ from app.customCommands.whatYouCan import text_commands_help, voice_commands_hel
 from app.customCommands.timer import timer
 from app.utils.content import load_context, save_context
 from app.customAI.timeAI import convertTime
+from app.customCommands.restoreDialog import restore_dialogue
+from app.customCommands.showDialogs import showDialogs
 
 with open('devolp_config.json', 'r', encoding='utf-8') as file:
     devolp_config = json.load(file)
@@ -182,9 +184,20 @@ def main(queue,outputText,commandToSound,condition):
                     else:                    
                         context_file = os.path.join('promts', current_branch, 'newContext.json')
                         wright("Имя диалога не указано. Оно бутет создано автоматически.")    
-
                     with open(context_file, 'w', encoding='utf-8') as f:
-                        json.dump([], f)  # Начинаем с пустого контекста                    
+                        json.dump([], f)  # Начинаем с пустого контекста
+
+                elif command in commands['restoreDialogsCommands']:
+                    if argument:
+                        try:
+                            restore_dialogue(current_branch, argument)
+                        except:
+                            wright("Ошибка: укажите имя файла для восстановления диалога.")
+                    else:
+                        restore_dialogue(current_branch, f"{dialog}.json")    
+
+                elif command in commands['showDialogsCommands']:
+                    showDialogs(current_branch)            
             else:
                 pass
                 response = requestTextAI(res, current_branch, dialog)
