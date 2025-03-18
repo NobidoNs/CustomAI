@@ -10,10 +10,10 @@ from app.customCommands.clearFile import clearFile
 from app.customCommands.show_branches import show_branches
 from app.customCommands.whatYouCan import text_commands_help, voice_commands_help
 from app.customCommands.timer import timer
-from app.utils.content import load_context, save_context
 from app.customAI.timeAI import convertTime
 from app.customCommands.restoreDialog import restore_dialogue
 from app.customCommands.showDialogs import showDialogs
+from app.customCommands.selectDialog import selectDialog
 
 with open('devolp_config.json', 'r', encoding='utf-8') as file:
     devolp_config = json.load(file)
@@ -145,8 +145,6 @@ def main(queue,outputText,commandToSound,condition):
                     outputText.put(voice_help)
 
                 elif command in commands['selectBranchCommands']:
-                    print(argument)
-
                     if argument:
                         current_branch = argument
                         wright(f"Текущая ветка изменена на: {current_branch}")
@@ -197,7 +195,18 @@ def main(queue,outputText,commandToSound,condition):
                         restore_dialogue(current_branch, f"{dialog}.json")    
 
                 elif command in commands['showDialogsCommands']:
-                    showDialogs(current_branch)            
+                    showDialogs(current_branch)     
+
+                elif command in commands['currentDialogCommands']:
+                    wright(dialog)
+
+                elif command in commands['selectDialogCommands']:
+                    if argument:
+                        dialog_res = selectDialog(current_branch, argument)
+                        if dialog_res:
+                            dialog = dialog_res
+                    else:
+                        wright("Ошибка: укажите название чата для переключения.")     
             else:
                 pass
                 response = requestTextAI(res, current_branch, dialog)

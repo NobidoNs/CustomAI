@@ -33,6 +33,16 @@
 			"чаты",
 			"покажи чаты"
 		],
+		"currentDialogCommands": ["-current-chat", "чат", "диалог"],
+		"selectDialogCommands": [
+			"-select-chat",
+			"выбери чат",
+			"выбрать чат",
+			"переключись на чат",
+			"выбери диалог",
+			"переключись на диалог",
+			"выбрать диалог"
+		],
 		"exitCommands": ["-exit", "-quit", "-выход", "-выключить"],
 		"branchCommands": ["-branches", "-branchs", "ветки", "покажи ветки"],
 		"selectBranchCommands": ["-branch", "ветка", "выбери ветку"],

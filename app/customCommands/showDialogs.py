@@ -7,7 +7,10 @@ def showDialogs(branch):
         wright("Ошибка: папка для диалогов не найдена.")
         return
 
-    dialogues = [f for f in os.listdir(dialogues_dir) if f.endswith('.json')]
+    # Фильтруем файлы, исключая mandatory_context.json и убираем расширение .json
+    dialogues = [os.path.splitext(f)[0] for f in os.listdir(dialogues_dir) 
+                 if f.endswith('.json') and f != 'mandatory_context.json']
+    
     if not dialogues:
         wright("Нет доступных диалогов в текущей ветке.")
     else:

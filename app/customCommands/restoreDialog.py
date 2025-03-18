@@ -3,7 +3,6 @@ import json
 from app.utils.wright import wright
 
 def restore_dialogue(branch, file_name):
-    print(file_name)
     file_path = os.path.join('promts', branch, file_name)
 
     if not os.path.exists(file_path):
