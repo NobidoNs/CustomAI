@@ -2,6 +2,7 @@ from pygame import mixer
 from gtts import gTTS
 import time
 from app.utils.wright import wright
+from app.customAI.TTS import process_text_with_ai
 import tempfile
 import threading
 import queue
@@ -47,46 +48,50 @@ def play_audio(play_event, audio_queue, stop_event, inpCommand):
         try:
             index, file_path = audio_queue.get(timeout=2)
         except queue.Empty:
+            if stop_event.is_set():
+                break
             continue
 
         mixer.music.load(file_path)
         mixer.music.play()
-        play_event.set()  
+        play_event.set()
 
         while mixer.music.get_busy():
-            # Check commands during playback
-            if not inpCommand.empty():
-                command = inpCommand.get()
-                if command == "stop":
-                    wright("Stopping audio playback.", True)
-                    mixer.music.stop()
-                    stop_event.set()
-                    break
+            if stop_event.is_set():  # Немедленно прерываем
+                mixer.music.stop()
+                mixer.music.unload()
+                if os.path.exists(file_path):
+                    os.remove(file_path)  # Удаляем текущий файл
+                return  # Выход из функции
+
             time.sleep(0.05)
 
         mixer.music.unload()
-        os.remove(file_path)
+        if os.path.exists(file_path):
+            os.remove(file_path)
 
-        if audio_queue.empty():
-            stop_event.set()
+        if audio_queue.empty() or stop_event.is_set():
+            break
+
+
+
 
 def tts(inpText, inpCommand, condition):
-    speed = 1
-    audio_queue = queue.Queue()
-    play_event = threading.Event()  # Управляет воспроизведением (чтобы не было задержек)
-    stop_event = threading.Event()
-    
-    while not condition.is_set():
-        
+    def process_inp_command():
         if not inpCommand.empty():
             command = inpCommand.get()
             argument = command.split(' ', 1)[1] if ' ' in command else None
+        
             if command == "stop":
-                mixer.music.stop()
                 wright("Stopping audio playback.", True)
-                stop_event.set()
+                mixer.music.stop()
+                mixer.music.unload()
+                stop_event.set()  # Сигнал остановки
+                with audio_queue.mutex:
+                    audio_queue.queue.clear()  # Очистка очереди
+                
             elif command == "-mute":
-                break
+                return "-mute"
             elif "-speed" in command:
                 if argument == 'up':
                     speed += 0.5
@@ -95,16 +100,24 @@ def tts(inpText, inpCommand, condition):
                 else:
                     speed = float(argument)
                 wright(f'Speed set to {speed}')
-        elif not inpText.empty():
-
+    speed = 1
+    audio_queue = queue.Queue()
+    play_event = threading.Event()  # Управляет воспроизведением (чтобы не было задержек)
+    stop_event = threading.Event()
+    
+    while not condition.is_set():
+        process_inp_command()
+        if not inpText.empty():
             stop_event.clear()
             stop_event = threading.Event()
             text = inpText.get()
-            
-            text = text_cleaner(text)
+
+            text = process_text_with_ai(text)
+
             text_parts = text.split(".")
             res_text_parts = []
-            if text_parts[-1] == "." or text_parts[-1] == "": text_parts = text_parts[:-1]
+            if text_parts[-1] == "." or text_parts[-1] == "": 
+                text_parts = text_parts[:-1]
             for text_part in text_parts:
                 chanks = split_text(text_part, 50)
                 for chank in chanks:
@@ -122,6 +135,10 @@ def tts(inpText, inpCommand, condition):
 
             # Запускаем оставшиеся части, пока первая играет
             for i, part in enumerate(text_parts[1:], start=1):
+                process_inp_command()
+                if stop_event.is_set():
+                    break
+
                 play_event.wait()  # Ждём, пока начнётся воспроизведение текущей
                 play_event.clear()  # Сбрасываем, пока следующая часть не загрузится
                 thread = threading.Thread(target=generate_audio, args=(part, i, audio_queue))

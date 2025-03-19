@@ -16,7 +16,7 @@ SAMPLE_RATE = 16000
 BUFFER_SIZE = 4096
 AUDIO_DURATION = 60  # В секундах
 MAX_FRAMES = (SAMPLE_RATE // BUFFER_SIZE) * AUDIO_DURATION
-AWAIT_TIME = 1
+AWAIT_TIME = 3
 
 with open('devolp_config.json', 'r', encoding='utf-8') as file:
     devolp_config = json.load(file)
@@ -101,6 +101,7 @@ def listenCommand(queue,condition,stream): # Listen for wake word and commands
 
     partRes = False
     wake_sound_played = False
+    stop_sound_played = False
     audio_buffer = collections.deque(maxlen=MAX_FRAMES)
 
     
@@ -114,15 +115,17 @@ def listenCommand(queue,condition,stream): # Listen for wake word and commands
             last_speech_time = time.time()
             if rec.AcceptWaveform(data): 
                 res = json.loads(rec.Result())['text']
-                if res in commands['muteCommands']:
-                    queue.put(res)
-                    partRes = False
-                    audio_buffer.clear()
+                
             else:
                 partial_result = json.loads(rec.PartialResult())
                 partial_text = partial_result.get("partial", "")
+                
+                if partial_text.startswith(tuple(commands['muteCommands'])) and not stop_sound_played:
+                    queue.put(partial_text)
+                    stop_sound_played = True
 
                 if partial_text in wakeWord and not wake_sound_played:
+                    stop_sound_played = False
                     partRes = True
                     startListenTime = time.time()
                     threading.Thread(target=playSound, args=('sounds/analog-button.mp3',), daemon=True).start()

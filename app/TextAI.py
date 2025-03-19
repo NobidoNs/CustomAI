@@ -35,9 +35,10 @@ def requestTextAI(request, branch, dialog, fastMode=False, precise=False):
         messages = [{"role": "system", "content": content}]
         
     # Добавляем контекст в запрос
+
     for msg in context[-MAX_CONTEXT_LENGTH:]:
-        messages.append({"role": "user", "content": msg["user"]}) 
-        messages.append({"role": "assistant", "content": msg["assistant"]})
+        messages.append(msg) 
+        # messages.append({"role": "assistant", "content": msg["assistant"]})
     messages.append({"role": "user", "content": request})
 
     for model in models:
