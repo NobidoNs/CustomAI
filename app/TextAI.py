@@ -1,6 +1,9 @@
 from g4f.client import Client
 from app.utils.wright import wright
-from app.utils.content import save_context, load_context, load_code_files
+from app.utils.content import save_context, load_context
+from app.customAI.hardPhilosophy import hardPhilosophy
+from app.customAI.coder import getCoderMessage
+from app.customAI.default import defaultAI
 import json
 
 with open('config.json', 'r', encoding='utf-8') as file:
@@ -13,7 +16,6 @@ def requestTextAI(request, branch, dialog, fastMode=False, precise=False):
     wright(f'request: {request}', log=True)
     wright('*Loading...*')
 
-    models = ["gpt-4", "phi-4", "llama-3.3-70b", "gemini-1.5-flash", "gpt-4o"]
     content = ''
     
     if fastMode:
@@ -21,43 +23,30 @@ def requestTextAI(request, branch, dialog, fastMode=False, precise=False):
     if precise:
         content = 'точный компьютер, который отвечает только по делу'
 
-    # Загружаем объединённый контекст (обязательный + основной)
     context = load_context(branch, dialog)
 
-    if branch == 'code_editing':
-        code_context = load_code_files()
-        messages = [
-            {"role": "system", "content": "Ты опытный программист, анализируй код и помогай с ним. Отвечай на русском"},
-            {"role": "system", "content": code_context}
-        ]
-    else:
-        messages = [{"role": "system", "content": content}]
-        
-    # Добавляем контекст в запрос
-
+    messages = [{"role": "system", "content": content}]
     for msg in context[-MAX_CONTEXT_LENGTH:]:
         messages.append(msg) 
-        # messages.append({"role": "assistant", "content": msg["assistant"]})
+    
     messages.append({"role": "user", "content": request})
 
-    for model in models:
-        try:
-            response = client.chat.completions.create(
-                model=model,
-                messages=messages,
-                web_search=False,
-                temperature=0.7,
-            )
-            response_text = response.choices[0].message.content   
+    if branch == 'code_editing':
+        messages = getCoderMessage(messages[:-1], request)
+    elif branch == 'философ':
+        response_text = hardPhilosophy(messages)    
 
-            # Сохраняем контекст
-            context.append({
-                "user": request,
-                "assistant": response_text
-            })
-            save_context(context, branch)
+    try:
+        wright('custom', log=True)
+        response_text
+    except:
+        wright('default', log=True)
+        response_text = defaultAI(messages)
 
-            return response_text
-        except:
-            wright('Ошибка получения ответа', log=True)
-            pass
+    context.append({
+        "user": request,
+        "assistant": response_text
+    })
+    save_context(context, branch)
+
+    return response_text

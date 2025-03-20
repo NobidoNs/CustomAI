@@ -17,7 +17,7 @@ def process_text_with_ai(input_text):
     try:
         # Отправляем запрос к модели
         response = client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-4o-mini",
             messages=messages,
             temperature=0.4,
         )
