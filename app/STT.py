@@ -16,7 +16,7 @@ SAMPLE_RATE = 16000
 BUFFER_SIZE = 4096
 AUDIO_DURATION = 60  # В секундах
 MAX_FRAMES = (SAMPLE_RATE // BUFFER_SIZE) * AUDIO_DURATION
-AWAIT_TIME = 3
+AWAIT_TIME = 1.5
 
 with open('devolp_config.json', 'r', encoding='utf-8') as file:
     devolp_config = json.load(file)

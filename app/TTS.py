@@ -136,14 +136,14 @@ def tts(inpText, inpCommand, condition):
             stop_event = threading.Event()
             text = inpText.get()
 
-            text = process_text_with_ai(text)
+            text = text_cleaner(process_text_with_ai(text))
 
             text_parts = text.split(".")
             res_text_parts = []
             if text_parts[-1] == "." or text_parts[-1] == "": 
                 text_parts = text_parts[:-1]
             for text_part in text_parts:
-                chanks = split_text(text_part, 50)
+                chanks = split_text(text_part, 100)
                 for chank in chanks:
                     res_text_parts.append(chank)
             text_parts = res_text_parts

@@ -1,7 +1,6 @@
 from g4f.client import Client
 from app.utils.wright import wright
-from app.utils.content import save_context, load_context
-from app.utils.content import load_code_files
+from app.utils.content import save_context, load_context, load_code_files
 import json
 
 with open('config.json', 'r', encoding='utf-8') as file:
