@@ -9,6 +9,8 @@ import queue
 import os
 import re
 import json
+from pydub import AudioSegment
+from pydub.playback import play
 
 with open('devolp_config.json', 'r', encoding='utf-8') as file:
   devolp_config = json.load(file)
@@ -36,14 +38,27 @@ def split_text(text, max_len):
         chunks.append(" ".join(current_chunk))
     return chunks
 
-def generate_audio(text, index, audio_queue):
+def generate_audio(text, index, audio_queue, speed):
+    temp_file = tempfile.NamedTemporaryFile(suffix=".mp3", delete=False)
+    temp_file.close()
     tts = gTTS(text=text, lang="ru")
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as temp_file:
-        temp_path = temp_file.name
-    tts.save(temp_path)
-    audio_queue.put((index, temp_path))
+    tts.save(temp_file.name)
 
-def play_audio(play_event, audio_queue, stop_event, inpCommand):
+    if speed != 1:
+        # Изменяем скорость с помощью pydub
+        audio = AudioSegment.from_file(temp_file.name)
+        new_audio = audio.speedup(speed,15)
+        
+        fast_temp_file = tempfile.NamedTemporaryFile(suffix=".mp3", delete=False)
+        fast_temp_file.close()
+
+        new_audio.export(fast_temp_file.name, format="mp3")
+        os.remove(temp_file.name)
+        audio_queue.put((index, fast_temp_file.name))
+    else:
+        audio_queue.put((index, temp_file.name))
+
+def play_audio(play_event, audio_queue, stop_event):
     while not stop_event.is_set():
         try:
             index, file_path = audio_queue.get(timeout=2)
@@ -52,32 +67,34 @@ def play_audio(play_event, audio_queue, stop_event, inpCommand):
                 break
             continue
 
-        mixer.music.load(file_path)
-        mixer.music.play()
-        play_event.set()
+        try:
+            mixer.music.load(file_path)
+            mixer.music.play()
 
-        while mixer.music.get_busy():
-            if stop_event.is_set():  # Немедленно прерываем
-                mixer.music.stop()
-                mixer.music.unload()
+            play_event.set()
+
+            while mixer.music.get_busy():
+                if stop_event.is_set():  # Immediately interrupt
+                    mixer.music.stop()
+                    mixer.music.unload()
+                    break
+                time.sleep(0.05)
+
+            mixer.music.unload()
+        finally:
+            # Always try to clean up the file, even if an error occurred
+            try:
                 if os.path.exists(file_path):
-                    os.remove(file_path)  # Удаляем текущий файл
-                return  # Выход из функции
-
-            time.sleep(0.05)
-
-        mixer.music.unload()
-        if os.path.exists(file_path):
-            os.remove(file_path)
+                    os.remove(file_path)
+            except Exception:
+                pass  # Ignore errors during cleanup
 
         if audio_queue.empty() or stop_event.is_set():
             break
 
-
-
-
 def tts(inpText, inpCommand, condition):
     def process_inp_command():
+        nonlocal speed  # Сделаем переменную speed доступной в этой функции
         if not inpCommand.empty():
             command = inpCommand.get()
             argument = command.split(' ', 1)[1] if ' ' in command else None
@@ -89,18 +106,25 @@ def tts(inpText, inpCommand, condition):
                 stop_event.set()  # Сигнал остановки
                 with audio_queue.mutex:
                     audio_queue.queue.clear()  # Очистка очереди
-                
             elif command == "-mute":
                 return "-mute"
             elif "-speed" in command:
                 if argument == 'up':
                     speed += 0.5
+                    wright(f"Speed increased to {speed}")
                 elif argument == 'down':
-                    speed -= 0.5
+                    if  speed >= 1.5:
+                        speed -= 0.5
+                    else:
+                        speed = 1.0
+                    wright(f"Speed decreased to {speed}")
                 else:
                     speed = float(argument)
-                wright(f'Speed set to {speed}')
-    speed = 1
+                    if  speed < 1:
+                        speed = 1.0
+                    wright(f"Speed set to {speed}")
+    
+    speed = 1.0
     audio_queue = queue.Queue()
     play_event = threading.Event()  # Управляет воспроизведением (чтобы не было задержек)
     stop_event = threading.Event()
@@ -125,11 +149,11 @@ def tts(inpText, inpCommand, condition):
             text_parts = res_text_parts
 
             # Запускаем поток воспроизведения
-            play_thread = threading.Thread(target=play_audio, args=(play_event, audio_queue, stop_event, inpCommand), daemon=True)
+            play_thread = threading.Thread(target=play_audio, args=(play_event, audio_queue, stop_event), daemon=True)
             play_thread.start()
 
             # Генерируем первую часть сразу
-            thread = threading.Thread(target=generate_audio, args=(text_parts[0], 0, audio_queue))
+            thread = threading.Thread(target=generate_audio, args=(text_parts[0], 0, audio_queue, speed))
             thread.start()
             thread.join() 
 
@@ -141,11 +165,12 @@ def tts(inpText, inpCommand, condition):
 
                 play_event.wait()  # Ждём, пока начнётся воспроизведение текущей
                 play_event.clear()  # Сбрасываем, пока следующая часть не загрузится
-                thread = threading.Thread(target=generate_audio, args=(part, i, audio_queue))
+                thread = threading.Thread(target=generate_audio, args=(part, i, audio_queue, speed))
                 thread.start()
 
             play_thread.join()
     
     wright("Остановка TTS", True)
+
 # sound init 
-mixer.init(frequency=AUDIO_FREQUENCY) # the sound seems to have changed
+mixer.init(frequency=AUDIO_FREQUENCY) # Инициализация с частотой
