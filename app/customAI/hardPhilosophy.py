@@ -6,7 +6,7 @@ def hardPhilosophy(request):
   try:
     with open('app/customAI/hardPhilosophy.md', 'r', encoding='utf-8') as file:
       content = file.read()
-    print(content)
+
     response = client.chat.completions.create(
         model="gpt-4o",
         messages=[
