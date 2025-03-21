@@ -82,5 +82,6 @@
 	"codes": ["  !", "    !", "\t!"],
 	"stopFind": ["------------", "*Loading...*"],
 	"AUDIO_FREQUENCY": 53040,
-	"timerSound": "sounds/timer.mp3"
+	"timerSound": "sounds/timer.mp3",
+	"useCutTTS": false
 }

@@ -15,6 +15,7 @@ from pydub.playback import play
 with open('devolp_config.json', 'r', encoding='utf-8') as file:
   devolp_config = json.load(file)
   AUDIO_FREQUENCY = devolp_config["AUDIO_FREQUENCY"]
+  useCutTTS = devolp_config["useCutTTS"]
 
 def text_cleaner(text):
     if not text:
@@ -136,7 +137,8 @@ def tts(inpText, inpCommand, condition):
             stop_event = threading.Event()
             text = inpText.get()
 
-            text = text_cleaner(process_text_with_ai(text))
+            if useCutTTS:
+                text = text_cleaner(process_text_with_ai(text))
 
             text_parts = text.split(".")
             res_text_parts = []
