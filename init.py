@@ -32,13 +32,13 @@ def run_init():
             if input("Использовать собственный звук старта? (y/N): ").strip().lower() == "y":
                 config['soundStart'] = input("Введите путь к звуку: ")
         
-        if input("Интеграция с Zapret (y/N): ").strip().lower() == "y":
-            config['useZapret'] = True
-            config['zapretPath'] = input("Введите путь к файлу zapret.exe: ")
-            config['zapretProcess'] = input("Введите название процесса: ")
-            if not config['zapretPath'] or not config['zapretProcess']:
-                print("Отмена интеграции с Zapret")
-                config['useZapret'] = False
+        # if input("Интеграция с Zapret (y/N): ").strip().lower() == "y":
+        #     config['useZapret'] = True
+        #     config['zapretPath'] = input("Введите путь к файлу zapret.exe: ")
+        #     config['zapretProcess'] = input("Введите название процесса: ")
+        #     if not config['zapretPath'] or not config['zapretProcess']:
+        #         print("Отмена интеграции с Zapret")
+        #         config['useZapret'] = False
     else:
         print("Имя ассистента - Джарвис")
         print("Для команд --help или 'расскажи что умеешь'")

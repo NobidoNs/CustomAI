@@ -2,8 +2,5 @@
 	"wakeWord": ["джарвис"],
 	"waitTime": 7,
 	"soundStart": "sounds/load.mp3",
-	"MAX_CONTEXT_LENGTH": 5,
-	"useZapret": false,
-	"zapretPath": "",
-	"zapretProcess": ""
+	"MAX_CONTEXT_LENGTH": 5
 }

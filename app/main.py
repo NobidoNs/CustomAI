@@ -1,14 +1,19 @@
 import time
 import os
 import json
+import threading
 from config import allCommands
 from app.utils.wright import wright
 from app.TextAI import requestTextAI
 from app.customCommands.saveBackup import saveBackup
 from app.customCommands.clearFile import clearFile
-from app.customCommands.show_backups import show_backups
+from app.customCommands.show_branches import show_branches
 from app.customCommands.whatYouCan import text_commands_help, voice_commands_help
 from app.customCommands.timer import timer
+from app.customAI.timeAI import convertTime
+from app.customCommands.restoreChat import restore_chat
+from app.customCommands.showChats import showChats
+from app.customCommands.selectChat import selectChat
 
 with open('devolp_config.json', 'r', encoding='utf-8') as file:
     devolp_config = json.load(file)
@@ -16,13 +21,13 @@ with open('devolp_config.json', 'r', encoding='utf-8') as file:
     codes = devolp_config['codes']
     stopFind = devolp_config['stopFind']
     commands = devolp_config['commands']
-    CONTEXT_FILE  = devolp_config['CONTEXT_FILE']
 
 with open('config.json', 'r', encoding='utf-8') as file:
     config = json.load(file)
-    useZapret = config['useZapret']
-    zapretPath = config['zapretPath']
-    zapretProcess = config['zapretProcess']
+    # useZapret = config['useZapret']
+    # zapretPath = config['zapretPath']
+    # zapretProcess = config['zapretProcess']
+    wakeWord = config['wakeWord']
 
 def requestInFile():
     with open(outputFile, 'r', encoding='utf-8') as file:
@@ -39,7 +44,23 @@ def requestInFile():
             return ''
     return ''
 
+def parse_command(phrase, commands):
+    
+    if phrase.split()[0].lower() in wakeWord or phrase.split()[0].lower() == 'чарльз':
+        phrase = ' '.join(phrase.split()[1:]).lower()
+    # print(phrase, phrase.split()[0], wakeWord)
+    if phrase in commands:
+        return phrase, None
+    for cmd in commands:
+        if phrase.startswith(cmd):
+            # print(cmd, phrase[len(cmd):].strip())
+            return cmd, phrase[len(cmd):].strip()
+    
 def main(queue,outputText,commandToSound,condition):
+    current_branch = "default"
+    chat = "context"
+    active_timer = None
+    timer_stop_event = threading.Event()
     while not condition.is_set():
         # await queue
         req = requestInFile()
@@ -52,47 +73,46 @@ def main(queue,outputText,commandToSound,condition):
                 res = queue.get()
                 wright(res)
 
-            # can be command
-            try:
-                firstWord = res.split(' ', 1)[0]
-                for i in commands:
-                    if res in i:
-                        firstWord = i
-            except:
-                firstWord = None
+            command = None
+            argument = None
 
-            # command check
-            if firstWord in allCommands or res in allCommands:
-                command = firstWord
-                argument = res.split(' ', 1)[1] if ' ' in res else None
+            for cmd_group in commands.values():
+                try:
+                    command, argument = parse_command(res, cmd_group)
+                    break
+                except:
+                    pass
+            # print(command, argument)
+            # can be command
+            if command:
 
                 # command logic
                 if command in commands['muteCommands']:
                     wright('stop')
                     commandToSound.put('stop')
 
-                elif command in commands['voiceCommands']:
+                elif command in commands['disableTTS']:
                     wright('MUTE')
                     commandToSound.put('-mute')
 
-                elif command in commands['clearCommands']:
+                elif command in commands['clearCliCommands']:
                     clearFile()
                     continue
 
-                elif command in commands['restartZapretCommands']:
-                    if useZapret:
-                        try:
-                            wright('Restarting zapret program...')
-                            # Kill existing process if running
-                            os.system(f'taskkill /F /IM {os.path.basename(zapretProcess)}')
-                            # Start new instance
-                            os.startfile(zapretPath)
-                        except:
-                            wright('Failed to restart zapret program')
-                    else:
-                        wright('Zapret is not enabled in config.json')
+                # elif command in commands['restartZapretCommands']:
+                #     if useZapret:
+                #         try:
+                #             wright('Restarting zapret program...')
+                #             # Kill existing process if running
+                #             os.system(f'taskkill /F /IM {os.path.basename(zapretProcess)}')
+                #             # Start new instance
+                #             os.startfile(zapretPath)
+                #         except:
+                #             wright('Failed to restart zapret program')
+                #     else:
+                #         wright('Zapret is not enabled in config.json')
 
-                elif command in commands['saveCommands']:
+                elif command in commands['backupCommands']:
                     backup_file = saveBackup(argument)
                     wright(f'Backup saved as: {backup_file}')
 
@@ -105,15 +125,13 @@ def main(queue,outputText,commandToSound,condition):
                     commandToSound.put(f'-speed down')
                 
                 elif command in commands['clearContextCommands']:
-                    with open(CONTEXT_FILE, 'w', encoding='utf-8') as f:
+                    context_file = f"promts/{current_branch}/context.json"
+                    with open(context_file, 'w', encoding='utf-8') as f:
                         json.dump([], f)
-                    wright('Context cleared')
+                    wright(f"Контекст для ветки '{current_branch}' очищен.")
 
                 elif command in commands['exitCommands']:
                     condition.set()
-
-                elif command in commands['branchCommands']:
-                    show_backups()
 
                 elif command in commands['helpCommands']:
                     text_help = text_commands_help()
@@ -123,11 +141,97 @@ def main(queue,outputText,commandToSound,condition):
                     voice_help = voice_commands_help()
                     outputText.put(voice_help)
                 
-                # elif command in commands['timerCCommands']:
-                #     timer()
+                # Таймер
+                elif command in commands['setTimerCommands']:
+                    if argument:
+                        timer_seconds = convertTime(argument)
+                        if timer_seconds == 0:
+                            wright("Не удалось преобразовать время в секунды.")
+                            continue
+                        if active_timer:
+                            timer_stop_event.set()
+                            active_timer.join() 
+                        timer_stop_event.clear()
+                        wright(f"Таймер установлен на {timer_seconds} секунд.")
+                        active_timer = threading.Thread(target=timer, args=(timer_seconds, timer_stop_event), daemon=True)
+                        active_timer.start()
+                    else:
+                        wright("Ошибка: укажите время для таймера.")
+
+                elif command in commands['stopTimerCommands']:
+                    if active_timer: 
+                        timer_stop_event.set() 
+                        active_timer.join()
+                        wright("Таймер остановлен.")
+                    else:
+                        wright("Таймер не запущен.")
+                
+                # Чаты
+                elif command in commands['newChatCommands']:
+                    if argument:
+                        context_file = os.path.join('promts', current_branch, f'{argument}.json')
+                        wright(f"Новый диалог создан для ветки '{current_branch}'.")
+                    else:                    
+                        context_file = os.path.join('promts', current_branch, 'newContext.json')
+                        wright("Имя диалога не указано. Оно бутет создано автоматически.")    
+                    with open(context_file, 'w', encoding='utf-8') as f:
+                        json.dump([], f)  # Начинаем с пустого контекста
+
+                elif command in commands['showChatsCommands']:
+                    showChats(current_branch)     
+
+                elif command in commands['showCurrentChatCommands']:
+                    wright(chat)
+
+                elif command in commands['selectChatCommands']:
+                    if argument:
+                        chat_res = selectChat(current_branch, argument)
+                        if chat_res:
+                            chat = chat_res
+                    else:
+                        wright("Ошибка: укажите название чата для переключения.")   
+                
+                elif command in commands['restoreChatCommands']:
+                    if argument:
+                        try:
+                            restore_chat(current_branch, argument)
+                        except:
+                            wright("Ошибка: укажите имя файла для восстановления диалога.")
+                    else:
+                        restore_chat(current_branch, f"{chat}.json")    
+                # Ветки
+                elif command in commands['newBranchCommands']:
+                    if argument:
+                        os.makedirs(os.path.join('promts', argument), exist_ok=True)
+                        with open(os.path.join('promts', argument, 'context.json'), 'w', encoding='utf-8') as f:
+                            json.dump([], f)
+                        with open(os.path.join('promts', argument, 'mandatory_context.json'), 'w', encoding='utf-8') as f:
+                            json.dump([{"role": "system", "content": "Высокий приоритет контексту: "}], f, ensure_ascii=False)
+                        wright(f"Ветка '{argument}' создана.")
+                    else:
+                        wright("Имя ветки не указано.")    
+
+                elif command in commands['showBranchCommands']:
+                    show_branches()
+
+                elif command in commands['showCurrentBranchCommands']:
+                    wright(f"Текущая ветка: {current_branch}")
+
+                elif command in commands['selectBranchCommands']:
+                    if argument:
+                        current_branch = argument
+                        chat = 'context'
+                        wright(f"Текущая ветка: {current_branch}, чат: {chat}")
+                    else:
+                        wright("Ошибка: укажите имя ветки для переключения.")
             else:
-                response = requestTextAI(res)
+                pass
+                response = requestTextAI(res, current_branch, chat)
                 outputText.put(response)
                 wright(response)
 
             wright('------------')
+    if active_timer:
+        timer_stop_event.set()
+        active_timer.join()
+    wright("Остановка main", True)
