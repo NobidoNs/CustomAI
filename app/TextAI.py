@@ -1,11 +1,11 @@
 from g4f.client import Client
 from app.utils.wright import wright
 from app.utils.content import save_context, load_context
-from app.customAI.hardPhilosophy import hardPhilosophy
+from app.customAI.philosophy.hardPhilosophy import hardPhilosophy
 from app.customAI.coder import getCoderMessage
 from app.customAI.default import defaultAI
-from app.customAI.jarvis import jarvis
-from app.customAI.yoda import yoda
+from app.customAI.jarvis.jarvis import jarvis
+from app.customAI.yoda.yoda import yoda
 import json
 
 with open('config.json', 'r', encoding='utf-8') as file:

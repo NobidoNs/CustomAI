@@ -2,9 +2,9 @@ from g4f.client import Client
 
 client = Client()
 
-def hardPhilosophy(request):
+def jarvis(request):
   try:
-    with open('app/customAI/hardPhilosophy.md', 'r', encoding='utf-8') as file:
+    with open('app/customAI/jarvis/jarvis.md', 'r', encoding='utf-8') as file:
       content = file.read()
 
     response = client.chat.completions.create(

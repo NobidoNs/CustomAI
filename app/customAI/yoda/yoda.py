@@ -2,9 +2,9 @@ from g4f.client import Client
 
 client = Client()
 
-def jarvis(request):
+def yoda(request):
   try:
-    with open('app/customAI/jarvis.md', 'r', encoding='utf-8') as file:
+    with open('app/customAI/yoda/yoda.md', 'r', encoding='utf-8') as file:
       content = file.read()
 
     response = client.chat.completions.create(
