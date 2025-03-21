@@ -2,10 +2,9 @@
 	"init": true,
 	"commands": {
 		"muteCommands": ["тихо", "хватит", "стоп", "молчи", "-stop", "-стоп"],
-		"voiceCommands": ["-mute"],
-		"clearCommands": ["-cli", "-cls"],
-		"saveCommands": ["-save"],
-		"restartZapretCommands": ["-zapret", "-yt", "-ds"],
+		"disableTTS": ["-mute"],
+		"clearCliCommands": ["-cli", "-cls"],
+		"backupCommands": ["-save"],
 		"setSpeedCommands": ["-speed", "-x", "-X"],
 		"upSpeedCommands": ["давай быстрее", "говори быстрее"],
 		"downSpeedCommands": [
@@ -14,39 +13,35 @@
 			"говори медленнее"
 		],
 		"clearContextCommands": ["-forget", "-fg", "забудь всё", "очисти контекст"],
-		"newDialogCommands": [
-			"-new-dialogue",
-			"новый диалог",
+
+		"newChatCommands": [
+			"-new-chat",
 			"новый чат",
-			"открой новый диалог",
 			"открой новый чат",
-			"создай новый диалог",
 			"создай новый чат",
-			"создай чат",
-			"создай диалог",
-			"создай ветку"
+			"создай чат"
 		],
-		"restoreDialogsCommands": ["-restore-dialogue", "восстанови диалог"],
-		"showDialogsCommands": [
-			"-restore-dialogue",
-			"покажи диалоги",
-			"диалоги",
-			"чаты",
-			"покажи чаты"
-		],
-		"currentDialogCommands": ["-current-chat", "чат", "диалог"],
-		"selectDialogCommands": [
+		"showChatsCommands": ["чаты", "покажи чаты"],
+		"showCurrentChatCommands": ["-current-chat", "текуший чат", "покажи чат"],
+		"selectChatCommands": [
 			"-select-chat",
+			"чат",
 			"выбери чат",
 			"выбрать чат",
-			"переключись на чат",
-			"выбери диалог",
-			"переключись на диалог",
-			"выбрать диалог"
+			"переключись на чат"
 		],
-		"exitCommands": ["-exit", "-quit", "-выход", "-выключить"],
-		"branchCommands": ["-branches", "-branchs", "ветки", "покажи ветки"],
+		"restoreChatCommands": ["-restore-chat", "восстанови чат"],
+
+		"newBranchCommands": ["создай ветку", "новая ветка", "создать ветку"],
+		"showBranchCommands": ["-branches", "-branchs", "ветки", "покажи ветки"],
+		"showCurrentBranchCommands": [
+			"-current-branch",
+			"текушая ветка",
+			"покажи ветку"
+		],
 		"selectBranchCommands": ["-branch", "ветка", "выбери ветку"],
+
+		"exitCommands": ["-exit", "-quit", "завершить работу"],
 		"helpCommands": ["-help", "--help"],
 		"aboutCommands": ["что ты умеешь", "что умеешь", "расскажи о себе"],
 		"setTimerCommands": ["-timer", "поставь таймер на", "таймер на"],

@@ -12,7 +12,7 @@ with open('config.json', 'r', encoding='utf-8') as file:
 
 client = Client()
 
-def requestTextAI(request, branch, dialog, fastMode=False, precise=False): 
+def requestTextAI(request, branch, chat, fastMode=False, precise=False): 
     wright(f'request: {request}', log=True)
     wright('*Loading...*')
 
@@ -23,7 +23,7 @@ def requestTextAI(request, branch, dialog, fastMode=False, precise=False):
     if precise:
         content = 'точный компьютер, который отвечает только по делу'
 
-    context = load_context(branch, dialog)
+    context = load_context(branch, chat)
 
     messages = [{"role": "system", "content": content}]
     for msg in context[-MAX_CONTEXT_LENGTH:]:
@@ -35,6 +35,7 @@ def requestTextAI(request, branch, dialog, fastMode=False, precise=False):
         messages = getCoderMessage(messages[:-1], request)
     elif branch == 'философ':
         response_text = hardPhilosophy(messages)    
+        print(response_text)
 
     try:
         wright('custom', log=True)
