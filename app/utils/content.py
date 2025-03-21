@@ -16,9 +16,9 @@ def save_context(context, branch):
     with open(context_file, 'w', encoding='utf-8') as f:
         json.dump(context, f, ensure_ascii=False, indent=2)       
 
-def load_context(branch, dialog):
+def load_context(branch, chat):
     # Путь к основному контексту
-    context_file = os.path.join(BASE_CONTEXT_DIR, branch, f'{dialog}.json')
+    context_file = os.path.join(BASE_CONTEXT_DIR, branch, f'{chat}.json')
 
     # Путь к обязательному контексту
     mandatory_context_file = os.path.join(BASE_CONTEXT_DIR, branch, 'mandatory_context.json')

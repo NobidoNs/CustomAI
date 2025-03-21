@@ -6,11 +6,11 @@ def hardPhilosophy(request):
   try:
     with open('app/customAI/hardPhilosophy.md', 'r', encoding='utf-8') as file:
       content = file.read()
+    print(content)
     response = client.chat.completions.create(
         model="gpt-4o",
         messages=[
-          {"role": "system", "content": content},
-          {"role": "user", "content": request},
+          {"role": "user", "content": f"{request}, {content}"},
         ],
     )
     return response.choices[0].message.content

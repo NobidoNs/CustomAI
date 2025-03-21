@@ -11,9 +11,9 @@ from app.customCommands.show_branches import show_branches
 from app.customCommands.whatYouCan import text_commands_help, voice_commands_help
 from app.customCommands.timer import timer
 from app.customAI.timeAI import convertTime
-from app.customCommands.restoreDialog import restore_dialogue
-from app.customCommands.showDialogs import showDialogs
-from app.customCommands.selectDialog import selectDialog
+from app.customCommands.restoreChat import restore_chat
+from app.customCommands.showChats import showChats
+from app.customCommands.selectChat import selectChat
 
 with open('devolp_config.json', 'r', encoding='utf-8') as file:
     devolp_config = json.load(file)
@@ -24,9 +24,9 @@ with open('devolp_config.json', 'r', encoding='utf-8') as file:
 
 with open('config.json', 'r', encoding='utf-8') as file:
     config = json.load(file)
-    useZapret = config['useZapret']
-    zapretPath = config['zapretPath']
-    zapretProcess = config['zapretProcess']
+    # useZapret = config['useZapret']
+    # zapretPath = config['zapretPath']
+    # zapretProcess = config['zapretProcess']
     wakeWord = config['wakeWord']
 
 def requestInFile():
@@ -58,7 +58,7 @@ def parse_command(phrase, commands):
     
 def main(queue,outputText,commandToSound,condition):
     current_branch = "default"
-    dialog = "context"
+    chat = "context"
     active_timer = None
     timer_stop_event = threading.Event()
     while not condition.is_set():
@@ -91,28 +91,28 @@ def main(queue,outputText,commandToSound,condition):
                     wright('stop')
                     commandToSound.put('stop')
 
-                elif command in commands['voiceCommands']:
+                elif command in commands['disableTTS']:
                     wright('MUTE')
                     commandToSound.put('-mute')
 
-                elif command in commands['clearCommands']:
+                elif command in commands['clearCliCommands']:
                     clearFile()
                     continue
 
-                elif command in commands['restartZapretCommands']:
-                    if useZapret:
-                        try:
-                            wright('Restarting zapret program...')
-                            # Kill existing process if running
-                            os.system(f'taskkill /F /IM {os.path.basename(zapretProcess)}')
-                            # Start new instance
-                            os.startfile(zapretPath)
-                        except:
-                            wright('Failed to restart zapret program')
-                    else:
-                        wright('Zapret is not enabled in config.json')
+                # elif command in commands['restartZapretCommands']:
+                #     if useZapret:
+                #         try:
+                #             wright('Restarting zapret program...')
+                #             # Kill existing process if running
+                #             os.system(f'taskkill /F /IM {os.path.basename(zapretProcess)}')
+                #             # Start new instance
+                #             os.startfile(zapretPath)
+                #         except:
+                #             wright('Failed to restart zapret program')
+                #     else:
+                #         wright('Zapret is not enabled in config.json')
 
-                elif command in commands['saveCommands']:
+                elif command in commands['backupCommands']:
                     backup_file = saveBackup(argument)
                     wright(f'Backup saved as: {backup_file}')
 
@@ -133,9 +133,6 @@ def main(queue,outputText,commandToSound,condition):
                 elif command in commands['exitCommands']:
                     condition.set()
 
-                elif command in commands['branchCommands']:
-                    show_branches()
-
                 elif command in commands['helpCommands']:
                     text_help = text_commands_help()
                     outputText.put(text_help)
@@ -143,14 +140,8 @@ def main(queue,outputText,commandToSound,condition):
                 elif command in commands['aboutCommands']:
                     voice_help = voice_commands_help()
                     outputText.put(voice_help)
-
-                elif command in commands['selectBranchCommands']:
-                    if argument:
-                        current_branch = argument
-                        wright(f"Текущая ветка изменена на: {current_branch}")
-                    else:
-                        wright("Ошибка: укажите имя ветки для переключения.")
                 
+                # Таймер
                 elif command in commands['setTimerCommands']:
                     if argument:
                         timer_seconds = convertTime(argument)
@@ -174,8 +165,9 @@ def main(queue,outputText,commandToSound,condition):
                         wright("Таймер остановлен.")
                     else:
                         wright("Таймер не запущен.")
-
-                elif command in commands['newDialogCommands']:
+                
+                # Чаты
+                elif command in commands['newChatCommands']:
                     if argument:
                         context_file = os.path.join('promts', current_branch, f'{argument}.json')
                         wright(f"Новый диалог создан для ветки '{current_branch}'.")
@@ -185,31 +177,55 @@ def main(queue,outputText,commandToSound,condition):
                     with open(context_file, 'w', encoding='utf-8') as f:
                         json.dump([], f)  # Начинаем с пустого контекста
 
-                elif command in commands['restoreDialogsCommands']:
+                elif command in commands['showChatsCommands']:
+                    showChats(current_branch)     
+
+                elif command in commands['showCurrentChatCommands']:
+                    wright(chat)
+
+                elif command in commands['selectChatCommands']:
+                    if argument:
+                        chat_res = selectChat(current_branch, argument)
+                        if chat_res:
+                            chat = chat_res
+                    else:
+                        wright("Ошибка: укажите название чата для переключения.")   
+                
+                elif command in commands['restoreChatCommands']:
                     if argument:
                         try:
-                            restore_dialogue(current_branch, argument)
+                            restore_chat(current_branch, argument)
                         except:
                             wright("Ошибка: укажите имя файла для восстановления диалога.")
                     else:
-                        restore_dialogue(current_branch, f"{dialog}.json")    
-
-                elif command in commands['showDialogsCommands']:
-                    showDialogs(current_branch)     
-
-                elif command in commands['currentDialogCommands']:
-                    wright(dialog)
-
-                elif command in commands['selectDialogCommands']:
+                        restore_chat(current_branch, f"{chat}.json")    
+                # Ветки
+                elif command in commands['newBranchCommands']:
                     if argument:
-                        dialog_res = selectDialog(current_branch, argument)
-                        if dialog_res:
-                            dialog = dialog_res
+                        os.makedirs(os.path.join('promts', argument), exist_ok=True)
+                        with open(os.path.join('promts', argument, 'context.json'), 'w', encoding='utf-8') as f:
+                            json.dump([], f)
+                        with open(os.path.join('promts', argument, 'mandatory_context.json'), 'w', encoding='utf-8') as f:
+                            json.dump([{"role": "system", "content": "Высокий приоритет контексту: "}], f, ensure_ascii=False)
+                        wright(f"Ветка '{argument}' создана.")
                     else:
-                        wright("Ошибка: укажите название чата для переключения.")     
+                        wright("Имя ветки не указано.")    
+
+                elif command in commands['showBranchCommands']:
+                    show_branches()
+
+                elif command in commands['showCurrentBranchCommands']:
+                    wright(f"Текущая ветка: {current_branch}")
+
+                elif command in commands['selectBranchCommands']:
+                    if argument:
+                        current_branch = argument
+                        wright(f"Текущая ветка: {current_branch}")
+                    else:
+                        wright("Ошибка: укажите имя ветки для переключения.")
             else:
                 pass
-                response = requestTextAI(res, current_branch, dialog)
+                response = requestTextAI(res, current_branch, chat)
                 outputText.put(response)
                 wright(response)
 
