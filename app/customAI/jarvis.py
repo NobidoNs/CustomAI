@@ -10,7 +10,8 @@ def jarvis(request):
     response = client.chat.completions.create(
         model="gpt-4o",
         messages=[
-          {"role": "user", "content": f"{request}, {content}"},
+          {"role": "user", "content": f"{content}"},
+          {"role": "user", "content": f"{request}"}
         ],
     )
     return response.choices[0].message.content

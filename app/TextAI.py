@@ -5,6 +5,7 @@ from app.customAI.hardPhilosophy import hardPhilosophy
 from app.customAI.coder import getCoderMessage
 from app.customAI.default import defaultAI
 from app.customAI.jarvis import jarvis
+from app.customAI.yoda import yoda
 import json
 
 with open('config.json', 'r', encoding='utf-8') as file:
@@ -38,11 +39,13 @@ def requestTextAI(request, branch, chat, fastMode=False, precise=False):
         response_text = hardPhilosophy(messages)    
     elif branch == 'джарвис':
         response_text = jarvis(messages)
+    elif branch == 'фан' and chat == 'йода':
+        response_text = yoda(messages)
 
 
     try:
-        wright('custom', log=True)
         response_text
+        wright('custom', log=True)
     except:
         wright('default', log=True)
         response_text = defaultAI(messages)
@@ -51,6 +54,6 @@ def requestTextAI(request, branch, chat, fastMode=False, precise=False):
         "user": request,
         "assistant": response_text
     })
-    save_context(context, branch)
+    save_context(context, branch, chat)
 
     return response_text

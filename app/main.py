@@ -220,7 +220,8 @@ def main(queue,outputText,commandToSound,condition):
                 elif command in commands['selectBranchCommands']:
                     if argument:
                         current_branch = argument
-                        wright(f"Текущая ветка: {current_branch}")
+                        chat = 'context'
+                        wright(f"Текущая ветка: {current_branch}, чат: {chat}")
                     else:
                         wright("Ошибка: укажите имя ветки для переключения.")
             else:

@@ -6,11 +6,11 @@ with open('devolp_config.json', 'r', encoding='utf-8') as file:
 
 BASE_CONTEXT_DIR = 'promts'
 
-def save_context(context, branch):
+def save_context(context, branch, chat):
     # Создаём папку для текущей ветки, если её нет
     context_dir = os.path.join(BASE_CONTEXT_DIR, branch)
     os.makedirs(context_dir, exist_ok=True)  # Создаёт папку, если её ещё нет
-    context_file = os.path.join(context_dir, 'context.json')      
+    context_file = os.path.join(context_dir, f'{chat}.json')      
 
     # Сохраняем контекст в файл
     with open(context_file, 'w', encoding='utf-8') as f:
