@@ -4,6 +4,7 @@ from app.utils.content import save_context, load_context
 from app.customAI.hardPhilosophy import hardPhilosophy
 from app.customAI.coder import getCoderMessage
 from app.customAI.default import defaultAI
+from app.customAI.jarvis import jarvis
 import json
 
 with open('config.json', 'r', encoding='utf-8') as file:
@@ -35,7 +36,9 @@ def requestTextAI(request, branch, chat, fastMode=False, precise=False):
         messages = getCoderMessage(messages[:-1], request)
     elif branch == 'философ':
         response_text = hardPhilosophy(messages)    
-        print(response_text)
+    elif branch == 'джарвис':
+        response_text = jarvis(messages)
+
 
     try:
         wright('custom', log=True)
