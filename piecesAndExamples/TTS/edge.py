@@ -8,7 +8,7 @@ async def text_to_speech():
     #    text = file.read()
     text = "Спасибо, у меня всё отлично! 😊 А у вас как дела?"
     # Создаем объект TTS и записываем в MP3
-    tts = edge_tts.Communicate(text="Привет, как делаfff?", voice="ru-RU-DmitryNeural", rate="-100%")
+    tts = edge_tts.Communicate(text="Привет, как дела?", voice="ru-RU-SvetlanaNeural")
     await tts.save("output.mp3")
 
     print("Файл 'output.mp3' успешно создан!")

@@ -11,7 +11,6 @@ import re
 import json
 import edge_tts
 from pydub import AudioSegment
-import uuid
 
 with open('devolp_config.json', 'r', encoding='utf-8') as file:
   devolp_config = json.load(file)
@@ -44,6 +43,14 @@ def split_text(text, max_len):
         chunks.append(" ".join(current_chunk))
     return chunks
 
+def change_pitch(audio_path, semitones):
+    audio = AudioSegment.from_file(audio_path)
+    pitch_change = 2 ** (semitones / 12.0)
+    filtered = audio._spawn(audio.raw_data, overrides={
+        'frame_rate': int(audio.frame_rate * pitch_change)
+    })
+    filtered.export(audio_path, format='mp3')
+
 async def generate_audio(text, index, audio_queue, speed):
     output_path = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3").name
     if speed == 1:
@@ -56,6 +63,9 @@ async def generate_audio(text, index, audio_queue, speed):
         tts = edge_tts.Communicate(text=text, voice=voice, rate=speedRate)
     
     await tts.save(output_path)
+
+    if voice == "ru-RU-SvetlanaNeural":
+        change_pitch(output_path, 3)
 
     audio_queue.put((index, output_path))
 
@@ -125,7 +135,10 @@ def tts(inpText, inpCommand, condition):
                         speed = 1.0
                     wright(f"Speed set to {speed}")
     
-    speed = 1.0
+    if voice == "ru-RU-NatalyaNeural":
+        speed = 1.1
+    else:    
+        speed = 1.0
     audio_queue = queue.Queue()
     play_event = threading.Event()  # Управляет воспроизведением (чтобы не было задержек)
     stop_event = threading.Event()
