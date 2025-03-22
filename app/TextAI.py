@@ -52,9 +52,7 @@ def requestTextAI(request, branch, chat, fastMode=False, precise=False):
 
     try:
         response_text
-        wright('custom', log=True)
     except:
-        wright('default', log=True)
         response_text = defaultAI(messages)
 
     context.append({

@@ -83,5 +83,6 @@
 	"stopFind": ["------------", "*Loading...*"],
 	"AUDIO_FREQUENCY": 53040,
 	"timerSound": "sounds/timer.mp3",
-	"useCutTTS": false
+	"useCutTTS": false,
+	"voices": ["ru-RU-DmitryNeural"]
 }

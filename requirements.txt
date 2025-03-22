@@ -6,3 +6,4 @@ gtts
 pygame
 asyncio
 pydub
+edge-tts

@@ -3,13 +3,15 @@ from app.utils.content import load_code_files
 
 client = Client()
 
-def getCoderMessage(data):
+def getCoderMessage(messages, request):
   try:
     code_context = load_code_files()
-    messages = [
+    con = [
             {"role": "system", "content": "Ты опытный программист, анализируй код и помогай с ним. Отвечай на русском"},
             {"role": "system", "content": code_context}
         ]
-    return messages + data
-  except:
+    req = [{"role": "user", "content": request}]
+    return con + messages + req
+  except Exception as e:
+    print(e)
     return 'Ошибка'

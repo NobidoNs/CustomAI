@@ -2,5 +2,6 @@
 	"wakeWord": ["джарвис"],
 	"waitTime": 7,
 	"soundStart": "sounds/load.mp3",
-	"MAX_CONTEXT_LENGTH": 5
+	"MAX_CONTEXT_LENGTH": 5,
+	"voice": "ru-RU-DmitryNeural"
 }

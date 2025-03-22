@@ -1,21 +1,26 @@
 from pygame import mixer
-from gtts import gTTS
 import time
 from app.utils.wright import wright
 from app.customAI.TTS import process_text_with_ai
 import tempfile
+import asyncio
 import threading
 import queue
 import os
 import re
 import json
+import edge_tts
 from pydub import AudioSegment
-from pydub.playback import play
+import uuid
 
 with open('devolp_config.json', 'r', encoding='utf-8') as file:
   devolp_config = json.load(file)
   AUDIO_FREQUENCY = devolp_config["AUDIO_FREQUENCY"]
   useCutTTS = devolp_config["useCutTTS"]
+
+with open('config.json', 'r', encoding='utf-8') as file:
+  config = json.load(file)
+  voice = config["voice"]
 
 def text_cleaner(text):
     if not text:
@@ -39,25 +44,20 @@ def split_text(text, max_len):
         chunks.append(" ".join(current_chunk))
     return chunks
 
-def generate_audio(text, index, audio_queue, speed):
-    temp_file = tempfile.NamedTemporaryFile(suffix=".mp3", delete=False)
-    temp_file.close()
-    tts = gTTS(text=text, lang="ru")
-    tts.save(temp_file.name)
-
-    if speed != 1:
-        # Изменяем скорость с помощью pydub
-        audio = AudioSegment.from_file(temp_file.name)
-        new_audio = audio.speedup(speed,15)
-        
-        fast_temp_file = tempfile.NamedTemporaryFile(suffix=".mp3", delete=False)
-        fast_temp_file.close()
-
-        new_audio.export(fast_temp_file.name, format="mp3")
-        os.remove(temp_file.name)
-        audio_queue.put((index, fast_temp_file.name))
+async def generate_audio(text, index, audio_queue, speed):
+    output_path = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3").name
+    if speed == 1:
+        tts = edge_tts.Communicate(text=text, voice=voice)
     else:
-        audio_queue.put((index, temp_file.name))
+        if speed < 1:
+            speedRate = f'-{int((1-speed)*100)}%'
+        else:
+            speedRate = f'+{int((speed-1)*100)}%'
+        tts = edge_tts.Communicate(text=text, voice=voice, rate=speedRate)
+    
+    await tts.save(output_path)
+
+    audio_queue.put((index, output_path))
 
 def play_audio(play_event, audio_queue, stop_event):
     while not stop_event.is_set():
@@ -139,6 +139,8 @@ def tts(inpText, inpCommand, condition):
 
             if useCutTTS:
                 text = text_cleaner(process_text_with_ai(text))
+            else:
+                text = text_cleaner(text)
 
             text_parts = text.split(".")
             res_text_parts = []
@@ -155,7 +157,7 @@ def tts(inpText, inpCommand, condition):
             play_thread.start()
 
             # Генерируем первую часть сразу
-            thread = threading.Thread(target=generate_audio, args=(text_parts[0], 0, audio_queue, speed))
+            thread = threading.Thread(target=asyncio.run, args=(generate_audio(text_parts[0], 0, audio_queue, speed),))
             thread.start()
             thread.join() 
 
@@ -167,7 +169,7 @@ def tts(inpText, inpCommand, condition):
 
                 play_event.wait()  # Ждём, пока начнётся воспроизведение текущей
                 play_event.clear()  # Сбрасываем, пока следующая часть не загрузится
-                thread = threading.Thread(target=generate_audio, args=(part, i, audio_queue, speed))
+                thread = threading.Thread(target=asyncio.run, args=(generate_audio(part, 0, audio_queue, speed),))
                 thread.start()
 
             play_thread.join()
