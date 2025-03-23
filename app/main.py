@@ -14,6 +14,7 @@ from app.customAI.timeAI import convertTime
 from app.customCommands.restoreChat import restore_chat
 from app.customCommands.showChats import showChats
 from app.customCommands.selectChat import selectChat
+from app.sysControl.run import runPrograms
 
 with open('devolp_config.json', 'r', encoding='utf-8') as file:
     devolp_config = json.load(file)
@@ -21,12 +22,10 @@ with open('devolp_config.json', 'r', encoding='utf-8') as file:
     codes = devolp_config['codes']
     stopFind = devolp_config['stopFind']
     commands = devolp_config['commands']
+    scriptsNames = devolp_config['scripts']
 
 with open('config.json', 'r', encoding='utf-8') as file:
     config = json.load(file)
-    # useZapret = config['useZapret']
-    # zapretPath = config['zapretPath']
-    # zapretProcess = config['zapretProcess']
     wakeWord = config['wakeWord']
 
 def requestInFile():
@@ -44,20 +43,18 @@ def requestInFile():
             return ''
     return ''
 
-def parse_command(phrase, commands):
+def parse_command(phrase, command):
     
     if phrase.split()[0].lower() in wakeWord or phrase.split()[0].lower() == 'чарльз':
         phrase = ' '.join(phrase.split()[1:]).lower()
-    # print(phrase, phrase.split()[0], wakeWord)
-    if phrase in commands:
-        return phrase, None
-    for cmd in commands:
-        if phrase.startswith(cmd):
-            # print(cmd, phrase[len(cmd):].strip())
-            return cmd, phrase[len(cmd):].strip()
+    # print(phrase, command)
+
+    if phrase.startswith(command):
+        # print(command, phrase[len(command):].strip())
+        return command, phrase[len(command):].strip()
     
 def main(queue,outputText,commandToSound,condition):
-    current_branch = "default"
+    current_branch = "джарвис"
     chat = "context"
     active_timer = None
     timer_stop_event = threading.Event()
@@ -76,7 +73,7 @@ def main(queue,outputText,commandToSound,condition):
             command = None
             argument = None
 
-            for cmd_group in commands.values():
+            for cmd_group in allCommands:
                 try:
                     command, argument = parse_command(res, cmd_group)
                     break
@@ -85,7 +82,6 @@ def main(queue,outputText,commandToSound,condition):
             # print(command, argument)
             # can be command
             if command:
-
                 # command logic
                 if command in commands['muteCommands']:
                     wright('stop')
@@ -98,19 +94,6 @@ def main(queue,outputText,commandToSound,condition):
                 elif command in commands['clearCliCommands']:
                     clearFile()
                     continue
-
-                # elif command in commands['restartZapretCommands']:
-                #     if useZapret:
-                #         try:
-                #             wright('Restarting zapret program...')
-                #             # Kill existing process if running
-                #             os.system(f'taskkill /F /IM {os.path.basename(zapretProcess)}')
-                #             # Start new instance
-                #             os.startfile(zapretPath)
-                #         except:
-                #             wright('Failed to restart zapret program')
-                #     else:
-                #         wright('Zapret is not enabled in config.json')
 
                 elif command in commands['backupCommands']:
                     backup_file = saveBackup(argument)
@@ -224,6 +207,13 @@ def main(queue,outputText,commandToSound,condition):
                         wright(f"Текущая ветка: {current_branch}, чат: {chat}")
                     else:
                         wright("Ошибка: укажите имя ветки для переключения.")
+                # Скрипты
+                elif any(command in item for sublist in scriptsNames.values() for item in sublist):
+                    for script in scriptsNames.keys():
+                        print(script, scriptsNames.keys())
+                        if command in scriptsNames[script]:
+                            runPrograms(script)
+
             else:
                 pass
                 response = requestTextAI(res, current_branch, chat)
