@@ -6,3 +6,4 @@ pygame
 asyncio
 pydub
 edge-tts
+psutil

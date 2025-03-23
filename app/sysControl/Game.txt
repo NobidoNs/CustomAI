@@ -1,0 +1,5 @@
+%LOCALAPPDATA%/Discord/Update.exe --processStart Discord.exe
+"C:\Program Files\Mozilla Firefox\firefox.exe"
+steam://rungameid/570
+close
+chrome.exe
