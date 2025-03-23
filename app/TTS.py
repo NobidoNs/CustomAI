@@ -135,7 +135,7 @@ def tts(inpText, inpCommand, condition):
                         speed = 1.0
                     wright(f"Speed set to {speed}")
     
-    if voice == "ru-RU-NatalyaNeural":
+    if voice == "ru-RU-DmitryNeural":
         speed = 1.1
     else:    
         speed = 1.0

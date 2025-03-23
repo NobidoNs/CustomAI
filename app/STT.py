@@ -42,16 +42,33 @@ def makeStream():
                     frames_per_buffer=BUFFER_SIZE)
     return stream
 
-def amplify_audio(audio_data, factor=5.0):
+def amplify_audio(audio_data, factor=2.0):
     audio_np = np.frombuffer(audio_data, dtype=np.int16).astype(np.float32)
     audio_np *= factor
     audio_np = np.clip(audio_np, -32768, 32767).astype(np.int16)
     return audio_np.tobytes()
 
-def is_speech(audio_data):
+def calibrate_threshold(stream, calibration_duration=2.0):
+    startTime = time.time()
+    audio_data = bytearray()
+    while time.time()-startTime < calibration_duration:
+        data = amplify_audio(stream.read(BUFFER_SIZE, exception_on_overflow=False))
+        audio_data.extend(data)
+        if not data:
+            break
+
+    audio_np = np.frombuffer(audio_data, dtype=np.int16)
+    calibration_samples = int(calibration_duration * SAMPLE_RATE)
+    calibration_audio = audio_np[:calibration_samples]
+    noise_level = np.abs(calibration_audio).mean()
+    threshold = noise_level * 1.2
+    return threshold
+
+def is_speech(audio_data, threshold):
     audio_np = np.frombuffer(audio_data, dtype=np.int16)
     volume = np.abs(audio_np).mean()
-    return volume > 300
+    # print(f"Volume: {volume}, Threshold: {threshold}")
+    return volume > threshold
 
 def get_last_seconds_audio(seconds, buffer_data):
     chunks_needed = int((SAMPLE_RATE * seconds) / BUFFER_SIZE)
@@ -104,14 +121,16 @@ def listenCommand(queue,condition,stream): # Listen for wake word and commands
     stop_sound_played = False
     audio_buffer = collections.deque(maxlen=MAX_FRAMES)
 
-    
+    threshold = calibrate_threshold(stream, calibration_duration=0.5)
+    wright(f"🔊 Threshold: {threshold}", log=True)
 
     while not condition.is_set():
         data = stream.read(BUFFER_SIZE, exception_on_overflow=False)
         data = amplify_audio(data)
         audio_buffer.append(data)
 
-        if is_speech(data):
+        if is_speech(data, threshold):
+            # print('🔊')
             last_speech_time = time.time()
             if rec.AcceptWaveform(data): 
                 res = json.loads(rec.Result())['text']
