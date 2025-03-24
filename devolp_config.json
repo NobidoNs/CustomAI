@@ -1,174 +1,96 @@
 {
-    "init": true,
-    "commands": {
-        "muteCommands": [
-            "тихо",
-            "хватит",
-            "стоп",
-            "молчи",
-            "-stop",
-            "-стоп"
-        ],
-        "disableTTS": [
-            "-mute"
-        ],
-        "clearCliCommands": [
-            "-cli",
-            "-cls"
-        ],
-        "backupCommands": [
-            "-save"
-        ],
-        "setSpeedCommands": [
-            "-speed",
-            "-x",
-            "-X"
-        ],
-        "upSpeedCommands": [
-            "давай быстрее",
-            "говори быстрее"
-        ],
-        "downSpeedCommands": [
-            "давай помедленней",
-            "слишком быстро",
-            "говори медленнее"
-        ],
-        "clearContextCommands": [
-            "-forget",
-            "-fg",
-            "забудь всё",
-            "очисти контекст"
-        ],
-        "newChatCommands": [
-            "-new-chat",
-            "новый чат",
-            "открой новый чат",
-            "создай новый чат",
-            "создай чат"
-        ],
-        "showChatsCommands": [
-            "чаты",
-            "покажи чаты"
-        ],
-        "showCurrentChatCommands": [
-            "-current-chat",
-            "текущий чат",
-            "покажи чат"
-        ],
-        "selectChatCommands": [
-            "-select-chat",
-            "чат",
-            "выбери чат",
-            "выбрать чат",
-            "переключись на чат"
-        ],
-        "restoreChatCommands": [
-            "-restore-chat",
-            "восстанови чат"
-        ],
-        "newBranchCommands": [
-            "создай ветку",
-            "новая ветка",
-            "создать ветку"
-        ],
-        "showBranchCommands": [
-            "-branches",
-            "-branchs",
-            "ветки",
-            "покажи ветки"
-        ],
-        "showCurrentBranchCommands": [
-            "-current-branch",
-            "текушая ветка",
-            "покажи ветку"
-        ],
-        "selectBranchCommands": [
-            "-branch",
-            "ветка",
-            "выбери ветку"
-        ],
-        "exitCommands": [
-            "-exit",
-            "-quit",
-            "завершить работу"
-        ],
-        "helpCommands": [
-            "-help",
-            "--help"
-        ],
-        "aboutCommands": [
-            "что ты умеешь",
-            "что умеешь",
-            "расскажи о себе"
-        ],
-        "setTimerCommands": [
-            "-timer",
-            "поставь таймер на",
-            "таймер на"
-        ],
-        "stopTimerCommands": [
-            "-stop-timer",
-            "останови таймер"
-        ]
-    },
-    "outputFile": "output.md",
-    "backupPath": "backups",
-    "voskModelPath": "./vosk-model-small-ru-0.22",
-    "baitWords": [
-        "вь",
-        "в",
-        "вью",
-        "вю",
-        "д",
-        "ж",
-        "дж",
-        "жа",
-        "джа",
-        "жар",
-        "раз",
-        "войс",
-        "результаты",
-        "быстро",
-        "вис",
-        "жара",
-        "дарвин",
-        "арт",
-        "джаз",
-        "жарт",
-        "вирт",
-        "резус",
-        "быстров",
-        "жарко",
-        "войска"
-    ],
-    "scripts": {
-        "Game": [
-            "сценарий игра",
-            "протокол игра",
-            "игровой код",
-            "игре быть"
-        ]
-    },
-    "badWords": [
-        "блин",
-        "ну",
-        "вот"
-    ],
-    "wrightLog": "False",
-    "codes": [
-        "  !",
-        "    !",
-        "\t!"
-    ],
-    "stopFind": [
-        "------------",
-        "*Loading...*"
-    ],
-    "AUDIO_FREQUENCY": 53040,
-    "timerSound": "sounds/timer.mp3",
-    "useCutTTS": false,
-    "voices": [
-        "ru-RU-DmitryNeural",
-        "ru-RU-SvetlanaNeural"
-    ]
+	"init": true,
+	"commands": {
+		"muteCommands": ["тихо", "хватит", "стоп", "молчи", "-stop", "-стоп"],
+		"disableTTS": ["-mute"],
+		"clearCliCommands": ["-cli", "-cls"],
+		"backupCommands": ["-save"],
+		"setSpeedCommands": ["-speed", "-x", "-X"],
+		"upSpeedCommands": ["давай быстрее", "говори быстрее"],
+		"downSpeedCommands": [
+			"давай помедленней",
+			"слишком быстро",
+			"говори медленнее"
+		],
+		"clearContextCommands": ["-forget", "-fg", "забудь всё", "очисти контекст"],
+		"newChatCommands": [
+			"-new-chat",
+			"новый чат",
+			"открой новый чат",
+			"создай новый чат",
+			"создай чат"
+		],
+		"showChatsCommands": ["чаты", "покажи чаты"],
+		"showCurrentChatCommands": ["-current-chat", "текущий чат", "покажи чат"],
+		"selectChatCommands": [
+			"-select-chat",
+			"чат",
+			"выбери чат",
+			"выбрать чат",
+			"переключись на чат"
+		],
+		"restoreChatCommands": ["-restore-chat", "восстанови чат"],
+		"newBranchCommands": ["создай ветку", "новая ветка", "создать ветку"],
+		"showBranchCommands": ["-branches", "-branchs", "ветки", "покажи ветки"],
+		"showCurrentBranchCommands": [
+			"-current-branch",
+			"текушая ветка",
+			"покажи ветку"
+		],
+		"selectBranchCommands": ["-branch", "ветка", "выбери ветку"],
+		"exitCommands": ["-exit", "-quit", "завершить работу"],
+		"helpCommands": ["-help", "--help"],
+		"aboutCommands": ["что ты умеешь", "что умеешь", "расскажи о себе"],
+		"setTimerCommands": ["-timer", "поставь таймер на", "таймер на"],
+		"stopTimerCommands": ["-stop-timer", "останови таймер"],
+		"changeVoiceCommands": [
+			"сменить голос",
+			"выбери другой голос",
+			"смени голос",
+			"другой голос"
+		]
+	},
+	"outputFile": "output.md",
+	"backupPath": "backups",
+	"voskModelPath": "./vosk-model-small-ru-0.22",
+	"baitWords": [
+		"вь",
+		"в",
+		"вью",
+		"вю",
+		"д",
+		"ж",
+		"дж",
+		"жа",
+		"джа",
+		"жар",
+		"раз",
+		"войс",
+		"результаты",
+		"быстро",
+		"вис",
+		"жара",
+		"дарвин",
+		"арт",
+		"джаз",
+		"жарт",
+		"вирт",
+		"резус",
+		"быстров",
+		"жарко",
+		"войска"
+	],
+	"scripts": {
+		"Game": ["сценарий игра", "протокол игра", "игровой код", "игре быть"]
+	},
+	"badWords": [],
+	"wrightLog": "False",
+	"codes": ["  !", "    !", "\t!"],
+	"stopFind": ["------------", "*Loading...*"],
+	"AUDIO_FREQUENCY": 53040,
+	"timerSound": "sounds/timer.mp3",
+	"useCutTTS": false,
+	"voices": ["ru-RU-DmitryNeural", "ru-RU-SvetlanaNeural"],
+	"lotCodeContext": "app",
+	"lotContext": ""
 }

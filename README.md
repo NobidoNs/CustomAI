@@ -56,6 +56,17 @@ This is a minimal yet powerful AI assistant designed for home use, built with ne
 3. Run Jarvis.bat or start.py file.
 4. (optional) open output.md file for use text mode (--help).
 
+## Example to use
+
+say: "джарвис расскажи о себе"
+or
+text: info/examples
+
+you can make jarvis swear when saying assigned words:
+   1. open devolp_config.json 
+   2. add words in "badWords"
+example: "badWords": ["ну"],
+
 ## 🛠️ How It Works
 
 1. **Activation**:  
