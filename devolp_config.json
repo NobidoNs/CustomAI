@@ -91,6 +91,5 @@
 	"timerSound": "sounds/timer.mp3",
 	"useCutTTS": false,
 	"voices": ["ru-RU-DmitryNeural", "ru-RU-SvetlanaNeural"],
-	"lotCodeContext": "app",
-	"lotContext": ""
+	"volumeAmbient": 0
 }

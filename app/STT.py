@@ -24,6 +24,7 @@ with open('devolp_config.json', 'r', encoding='utf-8') as file:
     baitWords = devolp_config['baitWords']
     voskModelPath = devolp_config['voskModelPath']
     badWords = devolp_config['badWords']
+    volumeAmbient = devolp_config['volumeAmbient']
 
 with open('config.json', 'r', encoding='utf-8') as file:
     config = json.load(file)
@@ -111,6 +112,10 @@ def listenCommand(queue,condition,stream): # Listen for wake word and commands
     baitWordsStr = ",".join(f'"{item}"' for item in baitWords)
     muteCommandsStr = ",".join(f'"{item}"' for item in commands['muteCommands'])
     badWordsStr = ",".join(f'"{item}"' for item in badWords)
+    if badWordsStr != '':
+        recognitionWords = f'[{wakeWordStr},{baitWordsStr},{muteCommandsStr},{badWordsStr}]'
+    else:
+        recognitionWords = f'[{wakeWordStr},{baitWordsStr},{muteCommandsStr}]'
     recognitionWords = f'[{wakeWordStr},{baitWordsStr},{muteCommandsStr},{badWordsStr}]'
 
     model = Model(voskModelPath)
@@ -121,7 +126,10 @@ def listenCommand(queue,condition,stream): # Listen for wake word and commands
     stop_sound_played = False
     audio_buffer = collections.deque(maxlen=MAX_FRAMES)
 
-    threshold = calibrate_threshold(stream, calibration_duration=0.5)
+    if volumeAmbient == 0:
+        threshold = calibrate_threshold(stream, calibration_duration=0.5)
+    else:
+        threshold = volumeAmbient
     wright(f"🔊 Threshold: {threshold}", log=True)
 
     while not condition.is_set():
