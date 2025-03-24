@@ -3,7 +3,7 @@ import threading
 import time
 import json
 from pygame import mixer
-from init import run_init
+from app.init import run_init
 from app.utils.wright import wright
 from app.STT import listenCommand, makeStream
 from app.main import main

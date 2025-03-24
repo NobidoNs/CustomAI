@@ -2,7 +2,7 @@ import time
 import os
 import json
 import threading
-from config import allCommands
+from app.config import allCommands
 from app.utils.wright import wright
 from app.TextAI import requestTextAI
 from app.customCommands.saveBackup import saveBackup
