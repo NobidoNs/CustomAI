@@ -51,10 +51,15 @@ This is a minimal yet powerful AI assistant designed for home use, built with ne
    run dependencies.bat
    or
    pip install -r requirements.txt
-   for linux: sudo apt install ffmpeg
-   for mac install portaudio
-3. Run Jarvis.bat or start.py file.
-4. (optional) open output.md file for use text mode (--help).
+   additionally for linux: sudo apt install ffmpeg
+   additionally for mac install portaudio
+3. Calibration:
+   run ambient.bat
+   or
+   run ambient.py
+   DO NOT make any SOUNDS for 5 seconds
+4. Run Jarvis.bat or start.py file.
+5. (optional) open output.md file for use text mode (--help).
 
 ## Example to use
 

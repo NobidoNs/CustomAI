@@ -1,6 +1,10 @@
 import pyaudio
 import numpy as np
 import time
+import json
+
+with open('devolp_config.json', 'r+', encoding='utf-8') as file:
+    devolp_config = json.load(file)
 
 # Параметры записи
 FORMAT = pyaudio.paInt16
@@ -14,9 +18,9 @@ audio = pyaudio.PyAudio()
 stream = audio.open(format=FORMAT, channels=CHANNELS, rate=RATE, input=True, frames_per_buffer=CHUNK)
 
 print(f"Измерение средней громкости за {DURATION} секунд (нажмите Ctrl+C для выхода)")
-
+all = []
 try:
-    while True:
+    for i in range(5):
         volume_levels = []  # Буфер громкости
         start_time = time.time()
 
@@ -28,9 +32,10 @@ try:
             # print(volume)
             volume_levels.append(volume)
 
-        avg_volume = np.median(volume_levels)  # Берем медиану для сглаживания выбросов
-        print(f"Средняя громкость за {DURATION} секунд: {avg_volume:.2f}")
-        print(f"устанивите значение volumeAmbient в devolp_config {int(avg_volume)*1.5} выбирайте меньшее")
+        avg_volume = np.median(volume_levels)*1.5  # Берем медиану для сглаживания выбросов
+        # print(f"Средняя громкость за {DURATION} секунд: {avg_volume:.2f}")
+        print(f"устанивите значение volumeAmbient в devolp_config {int(avg_volume)} выбирайте меньшее")
+        all.append(avg_volume)
 
 except KeyboardInterrupt:
     print("\nОстановка измерения громкости.")
@@ -39,3 +44,7 @@ except KeyboardInterrupt:
 stream.stop_stream()
 stream.close()
 audio.terminate()
+
+devolp_config['volumeAmbient'] = int(np.median(all))
+with open('devolp_config.json', 'w', encoding='utf-8') as file:
+    json.dump(devolp_config, file, indent=4, ensure_ascii=False)

@@ -58,22 +58,6 @@ def normalize_volume(audio_bytes, target_rms=1500, max_gain=5.0, dtype=np.int16)
     
     return normalized_data.tobytes()
 
-def calibrate_threshold(stream, calibration_duration=2.0):
-    startTime = time.time()
-    audio_data = bytearray()
-    while time.time()-startTime < calibration_duration:
-        data = normalize_volume(stream.read(BUFFER_SIZE, exception_on_overflow=False))
-        audio_data.extend(data)
-        if not data:
-            break
-
-    audio_np = np.frombuffer(audio_data, dtype=np.int16)
-    calibration_samples = int(calibration_duration * SAMPLE_RATE)
-    calibration_audio = audio_np[:calibration_samples]
-    noise_level = np.abs(calibration_audio).mean()
-    threshold = noise_level * 1.2
-    return threshold
-
 def is_speech(audio_data, threshold):
     audio_np = np.frombuffer(audio_data, dtype=np.int16)
     volume = np.abs(audio_np).mean()
@@ -115,7 +99,7 @@ def recognize_speech_buffer(queue, audio_buffer, listenTime):
 
 
 
-def listenCommand(queue,condition,stream): # Listen for wake word and commands
+def listenCommand(queue,condition,stream,say): # Listen for wake word and commands
     # some boring converting
     wakeWordStr = ",".join(f'"{item}"' for item in wakeWord)
     baitWordsStr = ",".join(f'"{item}"' for item in baitWords)
@@ -134,9 +118,14 @@ def listenCommand(queue,condition,stream): # Listen for wake word and commands
     wake_sound_played = False
     stop_sound_played = False
     audio_buffer = collections.deque(maxlen=MAX_FRAMES)
+    last_speech_time = time.time()
 
     if volumeAmbient == 0:
-        threshold = calibrate_threshold(stream, calibration_duration=0.5)
+        say.put("Для работы нужно откалибровать микрофон, запустите ambient.bat или volumeAmbient.py файл и не издавайте никаких звуков 5 секунд")
+        wright("Для работы нужно откалибровать микрофон, запустите ambient.bat или volumeAmbient.py файл и не издавайте никаких звуков 5 секунд")
+        time.sleep(15)
+        condition.set()
+        return None
     else:
         threshold = volumeAmbient
     wright(f"🔊 Threshold: {threshold}", log=True)

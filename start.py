@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
     stream = makeStream()
 
-    listenThread = threading.Thread(target=listenCommand, args=(myQueue,condition,stream))
+    listenThread = threading.Thread(target=listenCommand, args=(myQueue,condition,stream,outputText))
     mainThread = threading.Thread(target=main, args=(myQueue, outputText, commandToSound,condition))
     ttsThread = threading.Thread(target=tts, args=(outputText, commandToSound,condition))
 
