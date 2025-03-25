@@ -1,5 +1,5 @@
 {
-	"init": true,
+	"init": false,
 	"commands": {
 		"muteCommands": ["тихо", "хватит", "стоп", "молчи", "-stop", "-стоп"],
 		"disableTTS": ["-mute"],
@@ -88,7 +88,6 @@
 	"wrightLog": "False",
 	"codes": ["  !", "    !", "\t!"],
 	"stopFind": ["------------", "*Loading...*"],
-	"AUDIO_FREQUENCY": 53040,
 	"timerSound": "sounds/timer.mp3",
 	"useCutTTS": false,
 	"voices": ["ru-RU-DmitryNeural", "ru-RU-SvetlanaNeural"],
