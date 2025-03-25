@@ -143,45 +143,45 @@ def listenCommand(queue,condition,stream): # Listen for wake word and commands
 
     while not condition.is_set():
         data = stream.read(BUFFER_SIZE, exception_on_overflow=False)
-        # print(len(data))
 
         if is_speech(data, threshold):
-        # if is_speech(data):
-            # print('🔊')
-
-            data = normalize_volume(data)
-            audio_buffer.append(data)
-            
             last_speech_time = time.time()
-            if rec.AcceptWaveform(data): 
-                res = json.loads(rec.Result())['text']
-                
-            else:
-                partial_result = json.loads(rec.PartialResult())
-                partial_text = partial_result.get("partial", "")
-                
-                if partial_text.startswith(tuple(commands['muteCommands'])) and not stop_sound_played:
-                    queue.put(partial_text)
-                    stop_sound_played = True
-
-                if partial_text in wakeWord and not wake_sound_played:
-                    stop_sound_played = False
-                    partRes = True
-                    startListenTime = time.time()
-                    threading.Thread(target=playSound, args=('sounds/analog-button.mp3',), daemon=True).start()
-                    wake_sound_played = True
-
-                for word in badWords:
-                    if any(word in partial_text.split() for word in badWords):
-                        threading.Thread(target=playSound, args=('sounds/pep.mp3',), daemon=True).start()    
-
         else:
             if partRes and time.time() - last_speech_time > AWAIT_TIME:
                 wright('🎤', True)
+                partRes = False
+                
                 threading.Thread(target=playSound, args=('sounds/caset.mp3',), daemon=True).start()   
                 threading.Thread(target=recognize_speech_buffer, args=(queue, list(audio_buffer), time.time() - startListenTime + 1,), daemon=True).start()
                 audio_buffer.clear()
-                partRes = False
                 wake_sound_played = False 
+
+        data = normalize_volume(data)
+        audio_buffer.append(data)
+        
+        if rec.AcceptWaveform(data): 
+            res = json.loads(rec.Result())['text']
+            
+        else:
+            partial_result = json.loads(rec.PartialResult())
+            partial_text = partial_result.get("partial", "")
+            # print(f"🔊 {partial_text}")
+            if partial_text.startswith(tuple(commands['muteCommands'])) and not stop_sound_played:
+                queue.put(partial_text)
+                stop_sound_played = True
+
+            if partial_text in wakeWord and not wake_sound_played:
+                stop_sound_played = False
+                partRes = True
+                startListenTime = time.time()
+                threading.Thread(target=playSound, args=('sounds/analog-button.mp3',), daemon=True).start()
+                wake_sound_played = True
+
+            for word in badWords:
+                if any(word in partial_text.split() for word in badWords):
+                    threading.Thread(target=playSound, args=('sounds/pep.mp3',), daemon=True).start()    
+
+        
+                
 
     wright("Остановка STT", True)

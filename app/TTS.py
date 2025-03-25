@@ -14,13 +14,12 @@ from pydub import AudioSegment
 
 with open('devolp_config.json', 'r', encoding='utf-8') as file:
   devolp_config = json.load(file)
-  AUDIO_FREQUENCY = devolp_config["AUDIO_FREQUENCY"]
   useCutTTS = devolp_config["useCutTTS"]
 
 with open('config.json', 'r', encoding='utf-8') as file:
   config = json.load(file)
   voice = config["voice"]
-
+AUDIO_FREQUENCY = 48000
 def text_cleaner(text):
     if not text:
         return ''
@@ -113,6 +112,7 @@ def tts(inpText, inpCommand, condition):
                 wright("Stopping audio playback.", True)
                 mixer.music.stop()
                 mixer.music.unload()
+                time.sleep(0.5)
                 stop_event.set()  # Сигнал остановки
                 with audio_queue.mutex:
                     audio_queue.queue.clear()  # Очистка очереди
@@ -143,6 +143,7 @@ def tts(inpText, inpCommand, condition):
     stop_event = threading.Event()
     
     while not condition.is_set():
+        time.sleep(0.1)
         process_inp_command()
         if not inpText.empty():
             stop_event.clear()
