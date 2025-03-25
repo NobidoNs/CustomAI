@@ -109,7 +109,6 @@ def tts(inpText, inpCommand, condition):
         if not inpCommand.empty():
             command = inpCommand.get()
             argument = command.split(' ', 1)[1] if ' ' in command else None
-        
             if command == "stop":
                 wright("Stopping audio playback.", True)
                 mixer.music.stop()
@@ -185,7 +184,6 @@ def tts(inpText, inpCommand, condition):
                 thread = threading.Thread(target=asyncio.run, args=(generate_audio(part, 0, audio_queue, speed),))
                 thread.start()
 
-            play_thread.join()
     
     wright("Остановка TTS", True)
 
