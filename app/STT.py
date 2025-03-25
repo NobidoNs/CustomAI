@@ -43,17 +43,26 @@ def makeStream():
                     frames_per_buffer=BUFFER_SIZE)
     return stream
 
-def amplify_audio(audio_data, factor=2.0):
-    audio_np = np.frombuffer(audio_data, dtype=np.int16).astype(np.float32)
-    audio_np *= factor
-    audio_np = np.clip(audio_np, -32768, 32767).astype(np.int16)
-    return audio_np.tobytes()
+def normalize_volume(audio_bytes, target_rms=1500, max_gain=5.0, dtype=np.int16):
+    audio_data = np.frombuffer(audio_bytes, dtype=dtype)
+
+    if len(audio_data) == 0:
+        return audio_bytes
+    
+    rms = np.sqrt(np.mean(audio_data.astype(np.float32) ** 2))
+    if rms < 300:  # Порог "тишины" (можно регулировать)
+        gain = min(target_rms / (rms + 1e-6), max_gain)  # Ограничиваем усиление
+        normalized_data = (audio_data * gain).astype(dtype)
+    else:
+        normalized_data = audio_data
+    
+    return normalized_data.tobytes()
 
 def calibrate_threshold(stream, calibration_duration=2.0):
     startTime = time.time()
     audio_data = bytearray()
     while time.time()-startTime < calibration_duration:
-        data = amplify_audio(stream.read(BUFFER_SIZE, exception_on_overflow=False))
+        data = normalize_volume(stream.read(BUFFER_SIZE, exception_on_overflow=False))
         audio_data.extend(data)
         if not data:
             break
@@ -112,11 +121,11 @@ def listenCommand(queue,condition,stream): # Listen for wake word and commands
     baitWordsStr = ",".join(f'"{item}"' for item in baitWords)
     muteCommandsStr = ",".join(f'"{item}"' for item in commands['muteCommands'])
     badWordsStr = ",".join(f'"{item}"' for item in badWords)
-    if badWordsStr != '':
-        recognitionWords = f'[{wakeWordStr},{baitWordsStr},{muteCommandsStr},{badWordsStr}]'
-    else:
+    if badWordsStr == '':
         recognitionWords = f'[{wakeWordStr},{baitWordsStr},{muteCommandsStr}]'
-    recognitionWords = f'[{wakeWordStr},{baitWordsStr},{muteCommandsStr},{badWordsStr}]'
+        
+    else:
+        recognitionWords = f'[{wakeWordStr},{baitWordsStr},{muteCommandsStr},{badWordsStr}]'
 
     model = Model(voskModelPath)
     rec = KaldiRecognizer(model, SAMPLE_RATE, recognitionWords)
@@ -134,11 +143,15 @@ def listenCommand(queue,condition,stream): # Listen for wake word and commands
 
     while not condition.is_set():
         data = stream.read(BUFFER_SIZE, exception_on_overflow=False)
-        data = amplify_audio(data)
-        audio_buffer.append(data)
+        # print(len(data))
 
         if is_speech(data, threshold):
+        # if is_speech(data):
             # print('🔊')
+
+            data = normalize_volume(data)
+            audio_buffer.append(data)
+            
             last_speech_time = time.time()
             if rec.AcceptWaveform(data): 
                 res = json.loads(rec.Result())['text']
@@ -159,7 +172,7 @@ def listenCommand(queue,condition,stream): # Listen for wake word and commands
                     wake_sound_played = True
 
                 for word in badWords:
-                    if word in partial_text:
+                    if any(word in partial_text.split() for word in badWords):
                         threading.Thread(target=playSound, args=('sounds/pep.mp3',), daemon=True).start()    
 
         else:

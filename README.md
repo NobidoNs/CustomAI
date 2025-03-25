@@ -62,10 +62,12 @@ say: "джарвис расскажи о себе"
 or
 text: info/examples
 
-you can make jarvis swear when saying assigned words:
+You can make jarvis swear when saying assigned words:
    1. open devolp_config.json 
    2. add words in "badWords"
 example: "badWords": ["ну"],
+
+To load in jarvis lot context
 
 ## 🛠️ How It Works
 
