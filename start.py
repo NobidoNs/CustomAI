@@ -3,7 +3,7 @@ import threading
 import time
 import json
 from pygame import mixer
-from init import run_init
+from app.init import run_init
 from app.utils.wright import wright
 from app.STT import listenCommand, makeStream
 from app.main import main
@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
     stream = makeStream()
 
-    listenThread = threading.Thread(target=listenCommand, args=(myQueue,condition,stream))
+    listenThread = threading.Thread(target=listenCommand, args=(myQueue,condition,stream,outputText))
     mainThread = threading.Thread(target=main, args=(myQueue, outputText, commandToSound,condition))
     ttsThread = threading.Thread(target=tts, args=(outputText, commandToSound,condition))
 

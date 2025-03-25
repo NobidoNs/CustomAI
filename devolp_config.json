@@ -42,7 +42,13 @@
 		"helpCommands": ["-help", "--help"],
 		"aboutCommands": ["что ты умеешь", "что умеешь", "расскажи о себе"],
 		"setTimerCommands": ["-timer", "поставь таймер на", "таймер на"],
-		"stopTimerCommands": ["-stop-timer", "останови таймер"]
+		"stopTimerCommands": ["-stop-timer", "останови таймер"],
+		"changeVoiceCommands": [
+			"сменить голос",
+			"выбери другой голос",
+			"смени голос",
+			"другой голос"
+		]
 	},
 	"outputFile": "output.md",
 	"backupPath": "backups",
@@ -66,6 +72,7 @@
 		"жара",
 		"дарвин",
 		"арт",
+		"джар",
 		"джаз",
 		"жарт",
 		"вирт",
@@ -77,12 +84,12 @@
 	"scripts": {
 		"Game": ["сценарий игра", "протокол игра", "игровой код", "игре быть"]
 	},
-	"badWords": ["блин", "ну", "вот"],
+	"badWords": [],
 	"wrightLog": "False",
 	"codes": ["  !", "    !", "\t!"],
 	"stopFind": ["------------", "*Loading...*"],
-	"AUDIO_FREQUENCY": 53040,
 	"timerSound": "sounds/timer.mp3",
 	"useCutTTS": false,
-	"voices": ["ru-RU-DmitryNeural", "ru-RU-SvetlanaNeural"]
+	"voices": ["ru-RU-DmitryNeural", "ru-RU-SvetlanaNeural"],
+	"volumeAmbient": 0
 }

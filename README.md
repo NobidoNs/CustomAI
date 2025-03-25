@@ -33,22 +33,6 @@ This is a minimal yet powerful AI assistant designed for home use, built with ne
 
 ---
 
-## 🛠️ How It Works
-
-1. **Activation**:  
-   The assistant listens for its name to start processing input.
-
-2. **Speech Processing**:  
-   Once activated, it uses **Google Speech Recognizer** to capture audio from the microphone and convert it into text.
-
-3. **Request Handling**:  
-   The transcribed text is sent to the selected neural network for further processing, enabling dynamic responses.
-
-4. **Sound Playback**:
-   Using gTTS(Google text to speech) and pygame mixer read request.
-
----
-
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -67,10 +51,44 @@ This is a minimal yet powerful AI assistant designed for home use, built with ne
    run dependencies.bat
    or
    pip install -r requirements.txt
-   for linux: sudo apt install ffmpeg
-   for mac install portaudio
-3. Run Jarvis.bat or start.py file.
-4. (optional) open output.md file for use text mode (--help).
+   additionally for linux: sudo apt install ffmpeg
+   additionally for mac install portaudio
+3. Calibration:
+   run ambient.bat
+   or
+   run ambient.py
+   DO NOT make any SOUNDS for 5 seconds
+4. Run Jarvis.bat or start.py file.
+5. (optional) open output.md file for use text mode (--help).
+
+## Example to use
+
+say: "джарвис расскажи о себе"
+or
+text: info/examples
+
+You can make jarvis swear when saying assigned words:
+   1. open devolp_config.json 
+   2. add words in "badWords"
+example: "badWords": ["ну"],
+
+To load in jarvis lot context
+
+## 🛠️ How It Works
+
+1. **Activation**:  
+   The assistant listens for its name to start processing input.
+
+2. **Speech Processing**:  
+   Once activated, it uses **Google Speech Recognizer** to capture audio from the microphone and convert it into text.
+
+3. **Request Handling**:  
+   The transcribed text is sent to the selected neural network for further processing, enabling dynamic responses.
+
+4. **Sound Playback**:
+   Using gTTS(Google text to speech) and pygame mixer read request.
+
+---
 
 #### **List of Available Commands for Calling Scripts**
 

@@ -24,6 +24,7 @@ with open('devolp_config.json', 'r', encoding='utf-8') as file:
     baitWords = devolp_config['baitWords']
     voskModelPath = devolp_config['voskModelPath']
     badWords = devolp_config['badWords']
+    volumeAmbient = devolp_config['volumeAmbient']
 
 with open('config.json', 'r', encoding='utf-8') as file:
     config = json.load(file)
@@ -42,27 +43,20 @@ def makeStream():
                     frames_per_buffer=BUFFER_SIZE)
     return stream
 
-def amplify_audio(audio_data, factor=2.0):
-    audio_np = np.frombuffer(audio_data, dtype=np.int16).astype(np.float32)
-    audio_np *= factor
-    audio_np = np.clip(audio_np, -32768, 32767).astype(np.int16)
-    return audio_np.tobytes()
+def normalize_volume(audio_bytes, target_rms=1500, max_gain=5.0, dtype=np.int16):
+    audio_data = np.frombuffer(audio_bytes, dtype=dtype)
 
-def calibrate_threshold(stream, calibration_duration=2.0):
-    startTime = time.time()
-    audio_data = bytearray()
-    while time.time()-startTime < calibration_duration:
-        data = amplify_audio(stream.read(BUFFER_SIZE, exception_on_overflow=False))
-        audio_data.extend(data)
-        if not data:
-            break
-
-    audio_np = np.frombuffer(audio_data, dtype=np.int16)
-    calibration_samples = int(calibration_duration * SAMPLE_RATE)
-    calibration_audio = audio_np[:calibration_samples]
-    noise_level = np.abs(calibration_audio).mean()
-    threshold = noise_level * 1.2
-    return threshold
+    if len(audio_data) == 0:
+        return audio_bytes
+    
+    rms = np.sqrt(np.mean(audio_data.astype(np.float32) ** 2))
+    if rms < 300:  # Порог "тишины" (можно регулировать)
+        gain = min(target_rms / (rms + 1e-6), max_gain)  # Ограничиваем усиление
+        normalized_data = (audio_data * gain).astype(dtype)
+    else:
+        normalized_data = audio_data
+    
+    return normalized_data.tobytes()
 
 def is_speech(audio_data, threshold):
     audio_np = np.frombuffer(audio_data, dtype=np.int16)
@@ -105,13 +99,17 @@ def recognize_speech_buffer(queue, audio_buffer, listenTime):
 
 
 
-def listenCommand(queue,condition,stream): # Listen for wake word and commands
+def listenCommand(queue,condition,stream,say): # Listen for wake word and commands
     # some boring converting
     wakeWordStr = ",".join(f'"{item}"' for item in wakeWord)
     baitWordsStr = ",".join(f'"{item}"' for item in baitWords)
     muteCommandsStr = ",".join(f'"{item}"' for item in commands['muteCommands'])
     badWordsStr = ",".join(f'"{item}"' for item in badWords)
-    recognitionWords = f'[{wakeWordStr},{baitWordsStr},{muteCommandsStr},{badWordsStr}]'
+    if badWordsStr == '':
+        recognitionWords = f'[{wakeWordStr},{baitWordsStr},{muteCommandsStr}]'
+        
+    else:
+        recognitionWords = f'[{wakeWordStr},{baitWordsStr},{muteCommandsStr},{badWordsStr}]'
 
     model = Model(voskModelPath)
     rec = KaldiRecognizer(model, SAMPLE_RATE, recognitionWords)
@@ -120,47 +118,59 @@ def listenCommand(queue,condition,stream): # Listen for wake word and commands
     wake_sound_played = False
     stop_sound_played = False
     audio_buffer = collections.deque(maxlen=MAX_FRAMES)
+    last_speech_time = time.time()
 
-    threshold = calibrate_threshold(stream, calibration_duration=0.5)
+    if volumeAmbient == 0:
+        say.put("Для работы нужно откалибровать микрофон, запустите ambient.bat или volumeAmbient.py файл и не издавайте никаких звуков 5 секунд")
+        wright("Для работы нужно откалибровать микрофон, запустите ambient.bat или volumeAmbient.py файл и не издавайте никаких звуков 5 секунд")
+        time.sleep(15)
+        condition.set()
+        return None
+    else:
+        threshold = volumeAmbient
     wright(f"🔊 Threshold: {threshold}", log=True)
 
     while not condition.is_set():
         data = stream.read(BUFFER_SIZE, exception_on_overflow=False)
-        data = amplify_audio(data)
-        audio_buffer.append(data)
 
         if is_speech(data, threshold):
-            # print('🔊')
             last_speech_time = time.time()
-            if rec.AcceptWaveform(data): 
-                res = json.loads(rec.Result())['text']
-                
-            else:
-                partial_result = json.loads(rec.PartialResult())
-                partial_text = partial_result.get("partial", "")
-                
-                if partial_text.startswith(tuple(commands['muteCommands'])) and not stop_sound_played:
-                    queue.put(partial_text)
-                    stop_sound_played = True
-
-                if partial_text in wakeWord and not wake_sound_played:
-                    stop_sound_played = False
-                    partRes = True
-                    startListenTime = time.time()
-                    threading.Thread(target=playSound, args=('sounds/analog-button.mp3',), daemon=True).start()
-                    wake_sound_played = True
-
-                for word in badWords:
-                    if word in partial_text:
-                        threading.Thread(target=playSound, args=('sounds/pep.mp3',), daemon=True).start()    
-
         else:
             if partRes and time.time() - last_speech_time > AWAIT_TIME:
                 wright('🎤', True)
+                partRes = False
+                
                 threading.Thread(target=playSound, args=('sounds/caset.mp3',), daemon=True).start()   
                 threading.Thread(target=recognize_speech_buffer, args=(queue, list(audio_buffer), time.time() - startListenTime + 1,), daemon=True).start()
                 audio_buffer.clear()
-                partRes = False
                 wake_sound_played = False 
+
+        data = normalize_volume(data)
+        audio_buffer.append(data)
+        
+        if rec.AcceptWaveform(data): 
+            res = json.loads(rec.Result())['text']
+            
+        else:
+            partial_result = json.loads(rec.PartialResult())
+            partial_text = partial_result.get("partial", "")
+            # print(f"🔊 {partial_text}")
+            if partial_text.startswith(tuple(commands['muteCommands'])) and not stop_sound_played:
+                queue.put(partial_text)
+                stop_sound_played = True
+
+            if partial_text in wakeWord and not wake_sound_played:
+                stop_sound_played = False
+                partRes = True
+                startListenTime = time.time()
+                threading.Thread(target=playSound, args=('sounds/analog-button.mp3',), daemon=True).start()
+                wake_sound_played = True
+
+            for word in badWords:
+                if any(word in partial_text.split() for word in badWords):
+                    threading.Thread(target=playSound, args=('sounds/pep.mp3',), daemon=True).start()    
+
+        
+                
 
     wright("Остановка STT", True)

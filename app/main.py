@@ -2,7 +2,7 @@ import time
 import os
 import json
 import threading
-from config import allCommands
+from app.config import allCommands
 from app.utils.wright import wright
 from app.TextAI import requestTextAI
 from app.customCommands.saveBackup import saveBackup
@@ -23,8 +23,9 @@ with open('devolp_config.json', 'r', encoding='utf-8') as file:
     stopFind = devolp_config['stopFind']
     commands = devolp_config['commands']
     scriptsNames = devolp_config['scripts']
+    voices = devolp_config['voices']
 
-with open('config.json', 'r', encoding='utf-8') as file:
+with open('config.json', 'r+', encoding='utf-8') as file:
     config = json.load(file)
     wakeWord = config['wakeWord']
 
@@ -213,7 +214,15 @@ def main(queue,outputText,commandToSound,condition):
                         print(script, scriptsNames.keys())
                         if command in scriptsNames[script]:
                             runPrograms(script)
-
+                # Голос
+                elif command in commands['changeVoiceCommands']:
+                    if config['voice'] == voices[0]:
+                        config['voice'] = voices[1]
+                    else:
+                        config['voice'] = voices[0]
+                    with open('config.json', 'w', encoding='utf-8') as file:
+                        json.dump(config, file, indent=4, ensure_ascii=False)
+                    wright(f"Голос изменен на {config['voice']}")
             else:
                 pass
                 response = requestTextAI(res, current_branch, chat)
