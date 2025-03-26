@@ -9,4 +9,4 @@ def show_branches():
     if not branches:
         return "Ветки не найдены."
 
-    return "Доступные ветки:\n" + "\n".join(sorted(branches))
+    return "Доступные ветки:\n" + ".\n".join(reversed(sorted(branches)))
