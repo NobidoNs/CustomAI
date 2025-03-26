@@ -6,4 +6,4 @@ def playSound(sound):
         mixer.music.load(sound)
         mixer.music.play()
     except:
-        wright("Error loading sound", True)
+        wright("Error loading sound")

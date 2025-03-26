@@ -51,7 +51,7 @@ def text_commands_help():
 13. **Команды для смены голоса:**
     - `сменить голос` — Выбирает другой голос для TTS.
     """
-    wright(help_text)
+    wright(help_text, log=True)
 
 def voice_commands_help():
     """
@@ -102,4 +102,4 @@ def voice_commands_help():
 13. **Команды для смены голоса:**
         - `сменит голос` — Выбирает другой голос для TTS.
         """
-    wright(help_text)
+    wright(help_text, log=True)

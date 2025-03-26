@@ -6,7 +6,7 @@ def restore_chat(branch, file_name):
     file_path = os.path.join('promts', branch, file_name)
 
     if not os.path.exists(file_path):
-        wright(f"Ошибка: файл '{file_name}' не найден в ветке '{branch}'.")
+        wright(f"Ошибка: файл '{file_name}' не найден в ветке '{branch}'.", log=True)
         return
 
     with open(file_path, 'r', encoding='utf-8') as f:

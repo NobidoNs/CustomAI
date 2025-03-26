@@ -5,9 +5,11 @@ with open('devolp_config.json', 'r', encoding='utf-8') as file:
     outputFile = devolp_config['outputFile']
     wrightLog = devolp_config['wrightLog']
 
-def wright(text,log=False):
+def wright(text,log=False, say=False):
     print(text)
-    if log == False or wrightLog == True:
+    if log == True or wrightLog == True or say:
         with open(outputFile, 'a', encoding='utf-8') as file:
             file.write(f"\n{text}\n")
+    if say:
+        say.put(text)
 

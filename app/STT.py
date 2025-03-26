@@ -121,8 +121,7 @@ def listenCommand(queue,condition,stream,say): # Listen for wake word and comman
     last_speech_time = time.time()
 
     if volumeAmbient == 0:
-        say.put("Для работы нужно откалибровать микрофон, запустите ambient.bat или volumeAmbient.py файл и не издавайте никаких звуков 5 секунд")
-        wright("Для работы нужно откалибровать микрофон, запустите ambient.bat или volumeAmbient.py файл и не издавайте никаких звуков 5 секунд")
+        wright("Для работы нужно откалибровать микрофон, запустите ambient.bat или volumeAmbient.py файл и не издавайте никаких звуков 5 секунд", say=say)
         time.sleep(15)
         condition.set()
         return None
@@ -137,7 +136,6 @@ def listenCommand(queue,condition,stream,say): # Listen for wake word and comman
             last_speech_time = time.time()
         else:
             if partRes and time.time() - last_speech_time > AWAIT_TIME:
-                wright('🎤', True)
                 partRes = False
                 
                 threading.Thread(target=playSound, args=('sounds/caset.mp3',), daemon=True).start()   
@@ -154,7 +152,7 @@ def listenCommand(queue,condition,stream,say): # Listen for wake word and comman
         else:
             partial_result = json.loads(rec.PartialResult())
             partial_text = partial_result.get("partial", "")
-            # print(f"🔊 {partial_text}")
+            
             if partial_text.startswith(tuple(commands['muteCommands'])) and not stop_sound_played:
                 queue.put(partial_text)
                 stop_sound_played = True

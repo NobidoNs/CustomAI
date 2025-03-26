@@ -2,13 +2,14 @@ from g4f.client import Client
 
 client = Client()
 
-def yoda(request):
+def yoda(request,web_search):
   try:
     with open('app/customAI/yoda/yoda.md', 'r', encoding='utf-8') as file:
       content = file.read()
 
     response = client.chat.completions.create(
         model="gpt-4o",
+        web_search=web_search,
         messages=[
           {"role": "user", "content": f"{content}"},
           {"role": "user", "content": f"{request}"}

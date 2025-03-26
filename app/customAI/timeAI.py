@@ -7,7 +7,7 @@ def convertTime(timeToAI):
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
-            {"role": "system", "content": "ты отвечаешь только одним числомб ничего не пишешь кроме одного числа, если не знаешь ответ, то отвечаешь 0"},
+            {"role": "system", "content": "ты отвечаешь только одним числом ничего не пишешь кроме одного числа, если не знаешь ответ, то отвечаешь 0"},
             {"role": "user", "content": f"переведи {timeToAI} в секунды"},
         ],
     )
