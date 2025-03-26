@@ -23,12 +23,6 @@ def requestTextAI(request, branch, chat, fastMode=False, precise=False):
     wright('*Loading...*')
 
     content = ''
-    
-    if fastMode:
-        models = ["gpt-4o-mini", "gemini-1.5-flash"]
-    if precise:
-        content = 'точный компьютер, который отвечает только по делу'
-
     context = load_context(branch, chat)
 
     messages = [{"role": "system", "content": content}]
