@@ -1,5 +1,6 @@
 {
 	"init": false,
+	"AImodelsPriority": ["gpt-4", "gpt-4o", "phi-4", "llama-3.3-70b", "gemini-1.5-flash"],
 	"commands": {
 		"muteCommands": ["тихо", "хватит", "стоп", "молчи", "-stop", "-стоп"],
 		"disableTTS": ["-mute"],
