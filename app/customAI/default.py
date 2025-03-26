@@ -1,9 +1,12 @@
 from g4f.client import Client
 from app.utils.wright import wright
 
+with open('devolp_config.json', 'r', encoding='utf-8') as file:
+    devolp_config = json.load(file)
+    models = devolp_config['AImodelsPriority']
+
 client = Client()
 
-models = ["gpt-4", "phi-4", "llama-3.3-70b", "gemini-1.5-flash", "gpt-4o"]
 def defaultAI(messages):
     for model in models:
         try:
