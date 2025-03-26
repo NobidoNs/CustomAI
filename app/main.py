@@ -48,7 +48,7 @@ def parse_command(phrase, command):
     jarv = phrase.split()[0].lower()
     if jarv in wakeWord or jarv == 'чарльз' or jarv == 'джар':
         phrase = ' '.join(phrase.split()[1:]).lower()
-    print(phrase, command)
+    # print(phrase, command)
 
     if phrase.startswith(command):
         # print(command, phrase[len(command):].strip())
@@ -225,7 +225,6 @@ def main(queue,outputText,commandToSound,condition):
                     wright(f"Голос изменен на {config['voice']}", say=outputText)
                 
                 elif command in commands['webCommands']:
-                    print("web")
                     response = requestTextAI(res, current_branch, chat, True)
                     outputText.put(response)
                     wright(response)

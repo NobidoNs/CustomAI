@@ -116,6 +116,7 @@ def tts(inpText, inpCommand, condition):
                 mixer.music.unload()
                 time.sleep(0.5)
                 stop_event.set()  # Сигнал остановки
+                thread.join()  # Ожидание завершения потока
                 with audio_queue.mutex:
                     audio_queue.queue.clear()  # Очистка очереди
             elif command == "-mute":
@@ -162,7 +163,7 @@ def tts(inpText, inpCommand, condition):
             if text_parts[-1] == "." or text_parts[-1] == "": 
                 text_parts = text_parts[:-1]
             for text_part in text_parts:
-                chanks = split_text(text_part, 100)
+                chanks = split_text(text_part, 200)
                 for chank in chanks:
                     res_text_parts.append(chank)
             text_parts = res_text_parts
