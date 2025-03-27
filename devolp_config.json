@@ -28,8 +28,13 @@
 			"создай новый чат",
 			"создай чат"
 		],
-		"showChatsCommands": ["чаты", "покажи чаты"],
-		"showCurrentChatCommands": ["-current-chat", "текущий чат", "покажи чат"],
+		"showChatsCommands": ["чаты", "покажи чаты", "какие есть чаты"],
+		"showCurrentChatCommands": [
+			"-current-chat",
+			"текущий чат",
+			"покажи чат",
+			"какой сейчас чат"
+		],
 		"selectChatCommands": [
 			"-select-chat",
 			"чат",
@@ -49,7 +54,8 @@
 		"showCurrentBranchCommands": [
 			"-current-branch",
 			"текушая ветка",
-			"покажи ветку"
+			"покажи ветку",
+			"какая сейчас ветка"
 		],
 		"selectBranchCommands": ["-branch", "ветка", "выбери ветку"],
 		"exitCommands": ["-exit", "-quit", "завершить работу"],

@@ -1,5 +1,6 @@
 import time
 import os
+import re
 import json
 import threading
 from app.config import allCommands
@@ -168,7 +169,10 @@ def main(queue,outputText,commandToSound,condition):
                         json.dump([], f)  # Начинаем с пустого контекста
 
                 elif command in commands['showChatsCommands']:
-                    wright(showChats(current_branch), say=outputText)    
+                    chats = showChats(current_branch)
+                    ruChats = re.sub(r'[a-zA-Z_]', '', chats)
+                    wright(chats, log=True)
+                    wright(ruChats, say=outputText)    
 
                 elif command in commands['showCurrentChatCommands']:
                     wright(chat, True)
@@ -202,7 +206,10 @@ def main(queue,outputText,commandToSound,condition):
                         wright("Имя ветки не указано.", say=outputText)    
 
                 elif command in commands['showBranchCommands']:
-                    wright(show_branches(), say=outputText)
+                    branches = show_branches()
+                    ruBranches = re.sub(r'[a-zA-Z_]', '', branches)
+                    wright(branches, log=True)
+                    wright(ruBranches, say=outputText)
 
                 elif command in commands['showCurrentBranchCommands']:
                     wright(f"Текущая ветка: {current_branch}", say=outputText)
