@@ -17,9 +17,6 @@ with open('devolp_config.json', 'r', encoding='utf-8') as file:
   devolp_config = json.load(file)
   useCutTTS = devolp_config["useCutTTS"]
 
-with open('config.json', 'r', encoding='utf-8') as file:
-  config = json.load(file)
-  voice = config["voice"]
 AUDIO_FREQUENCY = 48000
 
 def text_cleaner(text):
@@ -61,7 +58,11 @@ async def generate_audio(text, index, audio_queue, speed, stop_event):
             return
             
         output_path = tempfile.NamedTemporaryFile(suffix=".mp3", delete=False).name
-        
+
+        with open('config.json', 'r', encoding='utf-8') as file:
+            config = json.load(file)
+            voice = config["voice"]
+        print(voice)
         if speed == 1:
             tts = edge_tts.Communicate(text=text, voice=voice)
         else:
@@ -73,7 +74,7 @@ async def generate_audio(text, index, audio_queue, speed, stop_event):
         
         await tts.save(output_path)
 
-        if voice == "ru-RU-SvetlanaNeural":
+        if voice == "айка":
             change_pitch(output_path, 3)
 
         if not stop_event.is_set():
@@ -221,7 +222,10 @@ def tts(inpText, inpCommand, condition):
     
     try:
         # Инициализация переменных
-        if voice == "ru-RU-DmitryNeural":
+        with open('config.json', 'r', encoding='utf-8') as file:
+            config = json.load(file)
+            voice = config["voice"]
+        if voice == "джарвис":
             speed = 1.1
         else:    
             speed = 1.0

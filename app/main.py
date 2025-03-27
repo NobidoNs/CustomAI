@@ -46,8 +46,14 @@ def requestInFile():
 
 def parse_command(phrase, command):
     jarv = phrase.split()[0].lower()
-    if jarv in wakeWord or jarv == 'чарльз' or jarv == 'джар':
+    if jarv in wakeWord or jarv == 'чарльз':
         phrase = ' '.join(phrase.split()[1:]).lower()
+    elif jarv == 'джар':
+        jarv2 = phrase.split()[1].lower()
+        if jarv2 == 'раз' or jarv2 == 'рас':
+            phrase = ' '.join(phrase.split()[2:]).lower()
+        else:
+            phrase = ' '.join(phrase.split()[1:]).lower()
     # print(phrase, command)
 
     if phrase.startswith(command):

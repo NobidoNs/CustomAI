@@ -39,7 +39,13 @@
 		],
 		"restoreChatCommands": ["-restore-chat", "восстанови чат"],
 		"newBranchCommands": ["создай ветку", "новая ветка", "создать ветку"],
-		"showBranchCommands": ["-branches", "-branchs", "ветки", "покажи ветки"],
+		"showBranchCommands": [
+			"-branches",
+			"-branchs",
+			"ветки",
+			"покажи ветки",
+			"какие есть ветки"
+		],
 		"showCurrentBranchCommands": [
 			"-current-branch",
 			"текушая ветка",
@@ -48,7 +54,12 @@
 		"selectBranchCommands": ["-branch", "ветка", "выбери ветку"],
 		"exitCommands": ["-exit", "-quit", "завершить работу"],
 		"helpCommands": ["-help", "--help"],
-		"aboutCommands": ["что ты умеешь", "что умеешь", "расскажи о себе"],
+		"aboutCommands": [
+			"что ты умеешь",
+			"что ты можешь",
+			"что умеешь",
+			"расскажи о себе"
+		],
 		"setTimerCommands": ["-timer", "поставь таймер на", "таймер на"],
 		"stopTimerCommands": ["-stop-timer", "останови таймер"],
 		"changeVoiceCommands": [
@@ -107,6 +118,6 @@
 	"stopFind": ["------------", "*Loading...*"],
 	"timerSound": "sounds/timer.mp3",
 	"useCutTTS": false,
-	"voices": ["ru-RU-DmitryNeural", "ru-RU-SvetlanaNeural"],
+	"voices": ["джарвис", "айка"],
 	"volumeAmbient": 0
 }
