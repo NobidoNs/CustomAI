@@ -1,4 +1,4 @@
-vosk==0.3.44
+vosk
 pyaudio
 g4f
 SpeechRecognition
@@ -7,3 +7,4 @@ asyncio
 pydub
 edge-tts
 psutil
+numpy
