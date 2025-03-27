@@ -18,9 +18,9 @@ with open('app/customAI/simple/characters.json', 'r', encoding='utf-8') as file:
 
 client = Client()
 
-def requestTextAI(request, branch, chat, fastMode=False, precise=False): 
-    wright(f'request: {request}', log=True)
-    wright('*Loading...*')
+def requestTextAI(request, branch, chat, web_search): 
+    wright(f'request: {request}')
+    wright('*Loading...*', log=True)
 
     content = ''
     context = load_context(branch, chat)
@@ -36,18 +36,18 @@ def requestTextAI(request, branch, chat, fastMode=False, precise=False):
     elif branch == 'философ':
         response_text = hardPhilosophy(messages)    
     elif branch == 'джарвис':
-        response_text = jarvis(messages)
+        response_text = jarvis(messages,web_search)
     elif branch == 'фан':
         if chat == 'йода':
-            response_text = yoda(messages)
+            response_text = yoda(messages,web_search)
         elif chat in characters:
-            response_text = chars(request, chat)
+            response_text = chars(request, chat,web_search)
 
 
     try:
         response_text
     except:
-        response_text = defaultAI(messages)
+        response_text = defaultAI(messages, web_search)
 
     context.append({
         "user": request,

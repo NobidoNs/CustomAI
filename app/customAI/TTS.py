@@ -24,5 +24,5 @@ def process_text_with_ai(input_text):
         processed_text = response.choices[0].message.content.strip()
         return processed_text
     except Exception as e:
-        wright(f"Ошибка обработки текста через ИИ: {e}", log=True)
+        wright(f"Ошибка обработки текста через ИИ: {e}")
         return input_text

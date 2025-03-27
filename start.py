@@ -46,7 +46,7 @@ if __name__ == "__main__":
             mixer.music.load(soundStart)
             mixer.music.play()
         except:
-            wright("Error loading soundStart", True)
+            wright("Error loading soundStart")
 
     try:
         while not condition.is_set():

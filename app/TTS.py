@@ -51,7 +51,7 @@ def change_pitch(audio_path, semitones):
     filtered.export(audio_path, format='mp3')
 
 async def generate_audio(text, index, audio_queue, speed):
-    output_path = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3").name
+    output_path = tempfile.NamedTemporaryFile(suffix=".mp3").name
     if speed == 1:
         tts = edge_tts.Communicate(text=text, voice=voice)
     else:
@@ -101,6 +101,8 @@ def play_audio(play_event, audio_queue, stop_event):
 
         if audio_queue.empty() or stop_event.is_set():
             break
+    mixer.music.stop()
+    mixer.music.unload()
 
 def tts(inpText, inpCommand, condition):
     def process_inp_command():
@@ -109,11 +111,12 @@ def tts(inpText, inpCommand, condition):
             command = inpCommand.get()
             argument = command.split(' ', 1)[1] if ' ' in command else None
             if command == "stop":
-                wright("Stopping audio playback.", True)
+                wright("Stopping audio playback.")
                 mixer.music.stop()
                 mixer.music.unload()
                 time.sleep(0.5)
                 stop_event.set()  # Сигнал остановки
+                thread.join()  # Ожидание завершения потока
                 with audio_queue.mutex:
                     audio_queue.queue.clear()  # Очистка очереди
             elif command == "-mute":
@@ -121,18 +124,18 @@ def tts(inpText, inpCommand, condition):
             elif "-speed" in command:
                 if argument == 'up':
                     speed += 0.5
-                    wright(f"Speed increased to {speed}")
+                    wright(f"Установлена скорость {speed}", say=inpText)
                 elif argument == 'down':
                     if  speed >= 1.5:
                         speed -= 0.5
                     else:
                         speed = 1.0
-                    wright(f"Speed decreased to {speed}")
+                    wright(f"Установлена скорость {speed}", say=inpText)
                 else:
                     speed = float(argument)
                     if  speed < 1:
                         speed = 1.0
-                    wright(f"Speed set to {speed}")
+                    wright(f"Установлена скорость {speed}", say=inpText)
     
     if voice == "ru-RU-DmitryNeural":
         speed = 1.1
@@ -160,7 +163,7 @@ def tts(inpText, inpCommand, condition):
             if text_parts[-1] == "." or text_parts[-1] == "": 
                 text_parts = text_parts[:-1]
             for text_part in text_parts:
-                chanks = split_text(text_part, 100)
+                chanks = split_text(text_part, 200)
                 for chank in chanks:
                     res_text_parts.append(chank)
             text_parts = res_text_parts

@@ -1,7 +1,15 @@
 {
 	"init": false,
+	"AImodelsPriority": [
+		"gpt-4",
+		"gpt-4o",
+		"phi-4",
+		"llama-3.3-70b",
+		"gemini-1.5-flash"
+	],
 	"commands": {
 		"muteCommands": ["тихо", "хватит", "стоп", "молчи", "-stop", "-стоп"],
+		"webCommands": ["интернет", "найди в интернете", "найди", "узнай"],
 		"disableTTS": ["-mute"],
 		"clearCliCommands": ["-cli", "-cls"],
 		"backupCommands": ["-save"],
@@ -54,6 +62,15 @@
 	"backupPath": "backups",
 	"voskModelPath": "./vosk-model-small-ru-0.22",
 	"baitWords": [
+		"х",
+		"хв",
+		"хва",
+		"т",
+		"ть",
+		"ти",
+		"с",
+		"ст",
+		"сто",
 		"вь",
 		"в",
 		"вью",

@@ -1,143 +1,141 @@
-# AI Home Assistant 🚀
+# 🏠 AI Домашний Помощник — Минималистичный Голосовой Ассистент
 
-Welcome to the **AI Home Assistant** project!  
-This is a minimal yet powerful AI assistant designed for home use, built with neural network integration and customizable functionality.
+**[![Python](https://img.shields.io/badge/Python-3.8+-blue?logo=python)](https://python.org)
+[![Лицензия](https://img.shields.io/badge/License-GPL3-green)](LICENSE)**
 
----
-
-## 🌟 Features
-
-1. **Name Recognition**:  
-   The assistant activates only when its name is called, ensuring a seamless and private experience.
-
-2. **Neural Network Flexibility**:  
-   Easily switch between different neural network models to tailor the assistant to your needs.
-
-3. **Simple and Lightweight**:  
-   A minimal implementation focused on core functionalities for maximum efficiency.
-
-4. **Context Management**:  
-   Ability to clear, create, restore, and switch communication contexts.
-
-5. **Branch Handling**:  
-   The assistant supports creating, selecting, and displaying different interaction branches.
-
-6. **Speech and Text Recognition**:  
-   Use of Vosk and Google Speech Recognizer for audio processing, as well as flexible handling of text commands.
-
-7. **Integration with Text and Voice Commands**:  
-   A full set of commands for controlling the assistant, available in both text and voice formats.
-
-8. **Timer and Sound Management**:  
-   Setting a timer, adjusting speech speed, and controlling sound playback.
+**Лёгкий | Мультиплатформенный**  
+Работает с облачными нейросетями потребляет минимум ресурсов. Ассистент активируется **только при произнесении имени**.
 
 ---
 
-## 🚀 Getting Started
+## 🌟 Почему этот проект?
 
-### Prerequisites
+| Особенность        | Преимущество                                                                                |
+| ------------------ | ------------------------------------------------------------------------------------------- |
+| **🔒 Приватность** | Обработка запросов начинается **только после активационной фразы** (звуковой сигнал при активации)        |
+| **☁️ Лёгкость**    | Работает с облачными (GPT-4o, Gemini) моделями избавляя от необходимсти иметь мощное железо |
+| **🎭 Характеры**   | Добавьте свой (app/customAI/simple/characters.json) или используйте готовый характер                 |
+| **⚡ Минимализм**  | Нацелен на работу через голосовое управление                                                |
 
-- Python 3.8+
-- A microphone-enabled device
+---
 
-### Installation
+## 🚀 Быстрый старт
 
-1. Clone the repository:
+### Установка (1 минута)
+
+```bash
+git clone https://github.com/NobidoNs/CustomAI.git
+cd CustomAI
+pip install -r requirements.txt
+```
+
+**Также для Linux/macOS:**
+
+```bash
+sudo apt install ffmpeg  # Linux
+brew install portaudio  # macOS
+```
+
+### Первый запуск
+
+1. **Калибровка микрофона** (5 сек тишины!):
    ```bash
-   git clone https://github.com/NobidoNs/CustomAI.git
-   cd CustomAI
+   python ambient.py
    ```
-2. Install dependencies:
-   run dependencies.bat
-   or
-   pip install -r requirements.txt
-   additionally for linux: sudo apt install ffmpeg
-   additionally for mac install portaudio
-3. Calibration:
-   run ambient.bat
-   or
-   run ambient.py
-   DO NOT make any SOUNDS for 5 seconds
-4. Run Jarvis.bat or start.py file.
-5. (optional) open output.md file for use text mode (--help).
-
-## Example to use
-
-say: "джарвис расскажи о себе"
-or
-text: info/examples
-
-You can make jarvis swear when saying assigned words:
-   1. open devolp_config.json 
-   2. add words in "badWords"
-example: "badWords": ["ну"],
-
-To load in jarvis lot context
-
-## 🛠️ How It Works
-
-1. **Activation**:  
-   The assistant listens for its name to start processing input.
-
-2. **Speech Processing**:  
-   Once activated, it uses **Google Speech Recognizer** to capture audio from the microphone and convert it into text.
-
-3. **Request Handling**:  
-   The transcribed text is sent to the selected neural network for further processing, enabling dynamic responses.
-
-4. **Sound Playback**:
-   Using gTTS(Google text to speech) and pygame mixer read request.
+   *Или*
+     
+   Запустить ambient.bat
+3. Запустите ассистента:
+   ```bash
+   python start.py
+   ```
+4. Скажите _«Джарвис»_ (прогремит сигнал) → задайте вопрос.
+  
+Рекомендую ознакомиться со списком команд 
+>Джарвис что ты умеешь?
 
 ---
 
-#### **List of Available Commands for Calling Scripts**
+## ⚙️ Настройка
 
-Scripts are defined in the `devolp_config.json` file under the `"scripts"` section. Each script has:
+### 1. Голос 
 
-- **Name** — the key in the `"scripts"` object.
-- **List of commands** — an array of strings that can be used to call the corresponding script.
+>Джарвис смени голос
 
-Example from the `devolp_config.json` file:
+### 2. Выбор характера
 
-```json
-"scripts": {
-    "Game": ["сценарий игра", "протокол игра", "игровой код", "игре быть"]
-}
-```
+По умолчанию вы общаетесь с Джарвисом
 
-#### **Example of Usage**
+Чтобы изменить:
+1. >Джарвис какие есть ветки?
+2. >Джарвис выбери ветку (название)
+3. >Джарвис какие есть чаты?
+4. >Джарвис выбери чат (название)
 
-. **Text Command:**
-In the command line or via text input, send a command associated with the desired script. For example:
+Можете изменять характеры в app/customAI/simple/characters.json
 
-```
-сценарий игра
-```
-
-After this, the `"Game"` script will be executed.
-
-#### **How to Add a New Script**
-
-To add a new custom script, follow these steps:
-
-##### 1 **Define the new script in `devolp_config.json`:**
+### 3. Настройте сценарии:
+  1. В app/sysControl откройте (название).txt
+  *Пусть будет Game.txt
+  3. Укажите пути к приложениям которые нужно открывать. Напишите close. И приложения которые нужно закрыть.  *пример в коде
+  4. В devolp_config найдите "scripts" и добавьте внутрь "(название)": ["(активационная фраза)"]
+Например:
 
 ```json
 "scripts": {
-    "NewScript": ["command for the new script"]
-}
+  "Game": ["сценарий игра", "протокол игра", "игровой код", "игре быть"]
+},
 ```
 
-##### 2 **Create NewScript.txt file in app/sysControl:**
+Готово!
 
-paste your program paths in it.
+### 3. Текстовый режим
 
-Last simplest configuration: https://github.com/NobidoNs/CustomAI/commit/89e4294d76a01d9c8c6b4fd115cf91d5c99e1642
+Откройте `output.md` и пишите:
 
-## 💡 Contribution
+```markdown
+    !найди в интернете какая погода завтра в Москве
+```
 
-We welcome contributions to enhance the assistant's capabilities! Feel free to submit a pull request or open an issue.
+Сохраните файл (<kbd>CTRL</kbd> + <kbd>S</kbd>)
 
-## 📝 License
+_(Ответ появится в том же файле)_
 
-This project is licensed under the MIT License.
+---
+
+## 🎭 Примеры команд
+
+| Действие        |         команда          |
+| --------------- | ------------------------ | 
+| Смена характера | _«Джарвис говори быстрее»_ | 
+| Очистка памяти  | _«Джарвис забудь всё»_  | 
+| Создание диалога | _«Джарвис создай чат (название)»_ |
+| Установка таймера | _«Джарвис поставь таймер на 15 минут»_ |
+
+---
+
+
+## 🛠️ Для разработчиков
+
+<p>
+  <img src="https://github.com/NobidoNs/CustomAI/blob/main/info/diagram.png" width="400" alt="Демо">
+</p>
+
+### Добавление команд
+
+Добавьте команду в devolp_config внутрь "commands"  
+В app/customCommands.py добавьте логику команды. (clearFile.py - простейший пример)
+В app/main.py:
+```python
+  from app.customCommands.clearFile import clearFile
+  ...
+  def main
+  ...
+    if command:
+      # command logic
+  ...
+      elif command in commands['clearCliCommands']: # Добавьте аналогично этому
+        clearFile()
+```
+
+💡 **Идеи или баги?** Открывайте [Issue](https://github.com/NobidoNs/CustomAI/issues)!
