@@ -103,6 +103,21 @@ def main(queue,outputText,commandToSound,condition):
                     clearFile()
                     continue
 
+                elif command in commands['rememberCommands']:
+                    mand_path = f"promts/{current_branch}/mandatory_context.json"
+                    with open(mand_path, 'r', encoding='utf-8') as file:
+                        existing_data = json.load(file)
+                    with open(mand_path, "w", encoding='utf-8') as file:
+                        new_data =  {"role": "user", "system": f"Высокий приоритет контексту {argument}. Запомни это: {argument}"}
+                        new_data2 = {"role": "user", "content": f"Запомни и это: {argument}"}
+                        existing_data.append(new_data)
+                        existing_data.append(new_data2)
+                        json.dump(existing_data, file, ensure_ascii=False)
+                    if config['voice'] == 'джарвис':
+                        wright(f'{argument}, Я запомнил', say=outputText)
+                    else:
+                        wright(f'{argument}, Я запомнилa', say=outputText)
+
                 elif command in commands['backupCommands']:
                     backup_file = saveBackup(argument)
                     wright(f'Backup saved as: {backup_file}', log=True)

@@ -29,10 +29,10 @@ def requestTextAI(request, branch, chat, web_search):
     for msg in context[-MAX_CONTEXT_LENGTH:]:
         messages.append(msg) 
     
-    if config["voice"] == "айка":
-        messages.append({"role": "system", "content": "в этот раз ответь от женского лица"})
-    else:
+    if config["voice"] == "джарвис":
         messages.append({"role": "system", "content": "в этот раз ответь от мужского лица"})
+    else:
+        messages.append({"role": "system", "content": "в этот раз ответь от женского лица"})
     messages.append({"role": "user", "content": request})
 
     if branch == 'code_editing':

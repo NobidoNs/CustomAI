@@ -20,6 +20,7 @@
 			"слишком быстро",
 			"говори медленнее"
 		],
+		"rememberCommands": ["-remember", "запомни"],
 		"clearContextCommands": ["-forget", "-fg", "забудь всё", "очисти контекст"],
 		"newChatCommands": [
 			"-new-chat",

@@ -64,19 +64,19 @@ async def generate_audio(text, index, audio_queue, speed, stop_event):
             voice = config["voice"]
 
         if speed == 1:
-            if voice == "айка":
-                tts = edge_tts.Communicate(text=text, voice="ru-RU-SvetlanaNeural")
-            else:
+            if voice == "джарвис":
                 tts = edge_tts.Communicate(text=text, voice="ru-RU-DmitryNeural")
+            else:
+                tts = edge_tts.Communicate(text=text, voice="ru-RU-SvetlanaNeural")
         else:
             if speed < 1:
                 speedRate = f'-{int((1-speed)*100)}%'
             else:
                 speedRate = f'+{int((speed-1)*100)}%'
-            if voice == "айка":
-                    tts = edge_tts.Communicate(text=text, voice="ru-RU-SvetlanaNeural", rate=speedRate)
+            if voice == "джарвис":
+                    tts = edge_tts.Communicate(text=text, voice="ru-RU-DmitryNeural", rate=speedRate)
             else:
-                tts = edge_tts.Communicate(text=text, voice="ru-RU-DmitryNeural", rate=speedRate)
+                tts = edge_tts.Communicate(text=text, voice="ru-RU-SvetlanaNeural", rate=speedRate)
         
         await tts.save(output_path)
 
