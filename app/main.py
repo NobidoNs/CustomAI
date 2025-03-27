@@ -122,8 +122,8 @@ def main(queue,outputText,commandToSound,condition):
                     outputText.put(text_help)
                 
                 elif command in commands['aboutCommands']:
-                    voice_help = voice_commands_help()
-                    outputText.put(voice_help)
+                    wright(voice_commands_help(), say=outputText)
+                    
                 
                 # Таймер
                 elif command in commands['setTimerCommands']:

@@ -260,6 +260,10 @@ def tts(inpText, inpCommand, condition):
                     
                     # Получаем и обрабатываем текст
                     text = inpText.get()
+
+                    if not isinstance(text, str):
+                        continue
+
                     text = text.replace('\n', ' ')  # Заменяем переносы строк
                     
                     if useCutTTS:
