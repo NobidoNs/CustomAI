@@ -2,6 +2,7 @@ import queue
 import threading
 import time
 import json
+import sys
 from pygame import mixer
 from app.init import run_init
 from app.utils.wright import wright
@@ -24,7 +25,8 @@ if not init:
 
 condition = threading.Event()
 if __name__ == "__main__":
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    if sys.platform == 'win32':
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
     myQueue = queue.Queue()
     outputText = queue.Queue()

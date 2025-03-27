@@ -34,7 +34,7 @@ try:
 
         avg_volume = np.median(volume_levels)*1.5  # Берем медиану для сглаживания выбросов
         # print(f"Средняя громкость за {DURATION} секунд: {avg_volume:.2f}")
-        print(f"устанивите значение volumeAmbient в devolp_config {int(avg_volume)} выбирайте меньшее")
+        print(f"Значение volumeAmbient в devolp_config {int(avg_volume)} (устаноится автоматически)")
         all.append(avg_volume)
 
 except KeyboardInterrupt:
