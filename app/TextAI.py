@@ -23,7 +23,6 @@ def requestTextAI(request, branch, chat, web_search):
     wright('*Loading...*', log=True)
 
     content = ''
-
     context = load_context(branch, chat)
 
     messages = [{"role": "system", "content": content}]
