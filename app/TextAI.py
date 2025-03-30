@@ -28,19 +28,13 @@ def requestTextAI(request, branch, chat, web_search):
     messages = [{"role": "system", "content": content}]
     for msg in context[-MAX_CONTEXT_LENGTH:]:
         messages.append(msg) 
-    
-    if config["voice"] == "джарвис":
-        messages.append({"role": "system", "content": "в этот раз ответь от мужского лица"})
-    else:
-        messages.append({"role": "system", "content": "в этот раз ответь от женского лица"})
     messages.append({"role": "user", "content": request})
-
     if branch == 'code_editing':
         messages = getCoderMessage(messages[:-1], request)
     elif branch == 'философ':
         response_text = hardPhilosophy(messages)    
     elif branch == 'джарвис':
-        response_text = jarvis(messages,web_search)
+        response_text = jarvis(messages, web_search)
     elif branch == 'фан':
         if chat == 'йода':
             response_text = yoda(messages,web_search)
