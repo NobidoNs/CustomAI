@@ -27,7 +27,7 @@
 git clone https://github.com/NobidoNs/CustomAI.git
 ```
 ```bash
-cd CustomAI
+cd CustomAI    
 pip install -r requirements.txt
 ```
 
