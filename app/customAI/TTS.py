@@ -1,5 +1,5 @@
 from g4f.client import Client
-from app.utils.wright import wright
+from app.utils.write import write
 
 client = Client()
 
@@ -24,5 +24,5 @@ def process_text_with_ai(input_text):
         processed_text = response.choices[0].message.content.strip()
         return processed_text
     except Exception as e:
-        wright(f"Ошибка обработки текста через ИИ: {e}")
+        write(f"Ошибка обработки текста через ИИ: {e}")
         return input_text

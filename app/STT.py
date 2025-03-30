@@ -6,7 +6,7 @@ import json
 import collections
 import numpy as np
 import threading
-from app.utils.wright import wright
+from app.utils.write import write
 from app.utils.playSound import playSound
 
 # Настройки аудиопотока
@@ -95,7 +95,7 @@ def recognize_speech_buffer(queue, audio_buffer, listenTime):
         text = googleRec.recognize_google(audio_data, language="ru-RU")
         queue.put(text)
     except:
-        wright('❌ Google Speech не распознал речь', True)
+        write('❌ Google Speech не распознал речь', True)
 
 
 
@@ -121,13 +121,13 @@ def listenCommand(queue,condition,stream,say): # Listen for wake word and comman
     last_speech_time = time.time()
 
     if volumeAmbient == 0:
-        wright("Для работы нужно откалибровать микрофон, запустите ambient.bat или volumeAmbient.py файл и не издавайте никаких звуков 5 секунд", say=say)
+        write("Для работы нужно откалибровать микрофон, запустите ambient.bat или volumeAmbient.py файл и не издавайте никаких звуков 5 секунд", say=say)
         time.sleep(15)
         condition.set()
         return None
     else:
         threshold = volumeAmbient
-    wright(f"🔊 Threshold: {threshold}", log=True)
+    write(f"🔊 Threshold: {threshold}", log=True)
 
     while not condition.is_set():
         data = stream.read(BUFFER_SIZE, exception_on_overflow=False)
@@ -171,4 +171,4 @@ def listenCommand(queue,condition,stream,say): # Listen for wake word and comman
         
                 
 
-    wright("Остановка STT", True)
+    write("Остановка STT", True)

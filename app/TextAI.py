@@ -1,5 +1,5 @@
 from g4f.client import Client
-from app.utils.wright import wright
+from app.utils.write import write
 from app.utils.content import save_context, load_context
 from app.customAI.philosophy.hardPhilosophy import hardPhilosophy
 from app.customAI.coder import getCoderMessage
@@ -19,8 +19,8 @@ with open('app/customAI/simple/characters.json', 'r', encoding='utf-8') as file:
 client = Client()
 
 def requestTextAI(request, branch, chat, web_search): 
-    wright(f'request: {request}')
-    wright('*Loading...*', log=True)
+    write(f'request: {request}')
+    write('*Loading...*', log=True)
 
     content = ''
     context = load_context(branch, chat)

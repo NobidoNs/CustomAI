@@ -1,6 +1,6 @@
 from pygame import mixer
 import time
-from app.utils.wright import wright
+from app.utils.write import write
 from app.customAI.TTS import process_text_with_ai
 import tempfile
 import asyncio
@@ -50,7 +50,7 @@ def change_pitch(audio_path, semitones):
         })
         filtered.export(audio_path, format='mp3')
     except Exception as e:
-        wright(f"Ошибка при изменении высоты тона: {e}", True)
+        write(f"Ошибка при изменении высоты тона: {e}", True)
 
 async def generate_audio(text, index, audio_queue, speed, stop_event):
     try:
@@ -86,7 +86,7 @@ async def generate_audio(text, index, audio_queue, speed, stop_event):
         if not stop_event.is_set():
             audio_queue.put((index, output_path))
     except Exception as e:
-        wright(f"Ошибка при генерации аудио: {e}", True)
+        write(f"Ошибка при генерации аудио: {e}", True)
         # Если произошла ошибка, но файл был создан, удаляем его
         try:
             if 'output_path' in locals() and os.path.exists(output_path):
@@ -116,7 +116,7 @@ def play_audio(play_event, audio_queue, stop_event):
                 
                 # Проверяем существование файла
                 if not os.path.exists(file_path):
-                    wright("Файл аудио не найден", True)
+                    write("Файл аудио не найден", True)
                     continue
                 
                 # Загружаем и воспроизводим аудио
@@ -137,7 +137,7 @@ def play_audio(play_event, audio_queue, stop_event):
                     
                     mixer.music.unload()
                 except Exception as e:
-                    wright(f"Ошибка при воспроизведении аудио: {e}", True)
+                    write(f"Ошибка при воспроизведении аудио: {e}", True)
                 finally:
                     # Удаляем временный файл
                     try:
@@ -146,11 +146,11 @@ def play_audio(play_event, audio_queue, stop_event):
                     except Exception:
                         pass
             except Exception as e:
-                wright(f"Ошибка в цикле воспроизведения: {e}", True)
+                write(f"Ошибка в цикле воспроизведения: {e}", True)
                 time.sleep(0.5)  # Пауза перед следующей итерацией
     except Exception as e:
-        wright(f"Критическая ошибка в потоке воспроизведения: {e}", True)
-        wright(traceback.format_exc(), True)
+        write(f"Критическая ошибка в потоке воспроизведения: {e}", True)
+        write(traceback.format_exc(), True)
     finally:
         # Гарантированная очистка при выходе
         try:
@@ -170,14 +170,14 @@ def tts(inpText, inpCommand, condition):
             argument = command.split(' ', 1)[1] if ' ' in command else None
             
             if command == "stop":
-                wright("Stopping audio playback.")
+                write("Stopping audio playback.")
                 
                 # Останавливаем воспроизведение
                 try:
                     mixer.music.stop()
                     mixer.music.unload()
                 except Exception as e:
-                    wright(f"Ошибка при остановке музыки: {e}", True)
+                    write(f"Ошибка при остановке музыки: {e}", True)
                 
                 # Устанавливаем флаг остановки
                 stop_event.set()
@@ -187,7 +187,7 @@ def tts(inpText, inpCommand, condition):
                     with audio_queue.mutex:
                         audio_queue.queue.clear()
                 except Exception as e:
-                    wright(f"Ошибка при очистке очереди: {e}", True)
+                    write(f"Ошибка при очистке очереди: {e}", True)
                 
                 # Принудительно перезапускаем mixer
                 try:
@@ -195,7 +195,7 @@ def tts(inpText, inpCommand, condition):
                     time.sleep(0.2)
                     mixer.init(frequency=AUDIO_FREQUENCY)
                 except Exception as e:
-                    wright(f"Ошибка при перезапуске mixer: {e}", True)
+                    write(f"Ошибка при перезапуске mixer: {e}", True)
                 
                 return "stop"
             elif command == "-mute":
@@ -204,25 +204,25 @@ def tts(inpText, inpCommand, condition):
                 try:
                     if argument == 'up':
                         speed += 0.5
-                        wright(f"Установлена скорость {speed}", say=inpText)
+                        write(f"Установлена скорость {speed}", say=inpText)
                     elif argument == 'down':
                         if speed >= 1.5:
                             speed -= 0.5
                         else:
                             speed = 1.0
-                        wright(f"Установлена скорость {speed}", say=inpText)
+                        write(f"Установлена скорость {speed}", say=inpText)
                     else:
                         try:
                             speed = float(argument)
                             if speed < 1:
                                 speed = 1.0
-                            wright(f"Установлена скорость {speed}", say=inpText)
+                            write(f"Установлена скорость {speed}", say=inpText)
                         except ValueError:
-                            wright("Неверный формат скорости", say=inpText)
+                            write("Неверный формат скорости", say=inpText)
                 except Exception as e:
-                    wright(f"Ошибка при изменении скорости: {e}", True)
+                    write(f"Ошибка при изменении скорости: {e}", True)
         except Exception as e:
-            wright(f"Ошибка при обработке команды: {e}", True)
+            write(f"Ошибка при обработке команды: {e}", True)
             
         return None
     
@@ -330,12 +330,12 @@ def tts(inpText, inpCommand, condition):
                                 if audio_queue.empty() and not mixer.music.get_busy():
                                     break
             except Exception as e:
-                wright(f"Ошибка в основном цикле TTS: {e}", True)
-                wright(traceback.format_exc(), True)
+                write(f"Ошибка в основном цикле TTS: {e}", True)
+                write(traceback.format_exc(), True)
                 time.sleep(1)
     except Exception as e:
-        wright(f"Критическая ошибка в TTS: {e}", True)
-        wright(traceback.format_exc(), True)
+        write(f"Критическая ошибка в TTS: {e}", True)
+        write(traceback.format_exc(), True)
     finally:
         # Очистка ресурсов
         try:
@@ -350,12 +350,12 @@ def tts(inpText, inpCommand, condition):
             mixer.music.stop()
             mixer.music.unload()
         except Exception as e:
-            wright(f"Ошибка при очистке ресурсов: {e}", True)
+            write(f"Ошибка при очистке ресурсов: {e}", True)
         
-        wright("Остановка TTS", True)
+        write("Остановка TTS", True)
 
 # Инициализация звука
 try:
     mixer.init(frequency=AUDIO_FREQUENCY)
 except Exception as e:
-    wright(f"Ошибка при инициализации mixer: {e}", True)
+    write(f"Ошибка при инициализации mixer: {e}", True)

@@ -4,7 +4,7 @@ import re
 import json
 import threading
 from app.config import allCommands
-from app.utils.wright import wright
+from app.utils.write import write
 from app.TextAI import requestTextAI
 from app.customCommands.saveBackup import saveBackup
 from app.customCommands.clearFile import clearFile
@@ -76,7 +76,7 @@ def main(queue,outputText,commandToSound,condition):
                 res = req
             else:
                 res = queue.get()
-                wright(res)
+                write(res)
 
             command = None
             argument = None
@@ -92,11 +92,11 @@ def main(queue,outputText,commandToSound,condition):
             if command:
                 # command logic
                 if command in commands['muteCommands']:
-                    wright('stop')
+                    write('stop')
                     commandToSound.put('stop')
 
                 elif command in commands['disableTTS']:
-                    wright('MUTE', log=True)
+                    write('MUTE', log=True)
                     commandToSound.put('-mute')
 
                 elif command in commands['clearCliCommands']:
@@ -114,13 +114,13 @@ def main(queue,outputText,commandToSound,condition):
                         existing_data.append(new_data2)
                         json.dump(existing_data, file, ensure_ascii=False)
                     if config['voice'] == 'джарвис':
-                        wright(f'{argument}, Я запомнил', say=outputText)
+                        write(f'{argument}, Я запомнил', say=outputText)
                     else:
-                        wright(f'{argument}, Я запомнилa', say=outputText)
+                        write(f'{argument}, Я запомнилa', say=outputText)
 
                 elif command in commands['backupCommands']:
                     backup_file = saveBackup(argument)
-                    wright(f'Backup saved as: {backup_file}', log=True)
+                    write(f'Backup saved as: {backup_file}', log=True)
 
                 elif command in commands['setSpeedCommands']:
                     commandToSound.put(f'-speed {argument}')
@@ -134,7 +134,7 @@ def main(queue,outputText,commandToSound,condition):
                     context_file = f"promts/{current_branch}/context.json"
                     with open(context_file, 'w', encoding='utf-8') as f:
                         json.dump([], f)
-                    wright(f"Контекст для ветки '{current_branch}' очищен.", say=outputText)
+                    write(f"Контекст для ветки '{current_branch}' очищен.", say=outputText)
 
                 elif command in commands['exitCommands']:
                     condition.set()
@@ -144,7 +144,7 @@ def main(queue,outputText,commandToSound,condition):
                     outputText.put(text_help)
                 
                 elif command in commands['aboutCommands']:
-                    wright(voice_commands_help(), say=outputText)
+                    write(voice_commands_help(), say=outputText)
                     
                 
                 # Таймер
@@ -152,45 +152,45 @@ def main(queue,outputText,commandToSound,condition):
                     if argument:
                         timer_seconds = convertTime(argument)
                         if timer_seconds == 0:
-                            wright("Не удалось преобразовать время в секунды.", say=outputText)
+                            write("Не удалось преобразовать время в секунды.", say=outputText)
                             continue
                         if active_timer:
                             timer_stop_event.set()
                             active_timer.join() 
                         timer_stop_event.clear()
-                        wright(f"Таймер установлен на {timer_seconds} секунд.", say=outputText)
+                        write(f"Таймер установлен на {timer_seconds} секунд.", say=outputText)
                         active_timer = threading.Thread(target=timer, args=(timer_seconds, timer_stop_event), daemon=True)
                         active_timer.start()
                     else:
-                        wright("Ошибка: укажите время для таймера.", say=outputText)
+                        write("Ошибка: укажите время для таймера.", say=outputText)
 
                 elif command in commands['stopTimerCommands']:
                     if active_timer: 
                         timer_stop_event.set() 
                         active_timer.join()
-                        wright("Таймер остановлен.", say=outputText)
+                        write("Таймер остановлен.", say=outputText)
                     else:
-                        wright("Таймер не запущен.", say=outputText)
+                        write("Таймер не запущен.", say=outputText)
                 
                 # Чаты
                 elif command in commands['newChatCommands']:
                     if argument:
                         context_file = os.path.join('promts', current_branch, f'{argument}.json')
-                        wright(f"Новый диалог создан для ветки '{current_branch}'.", say=outputText)
+                        write(f"Новый диалог создан для ветки '{current_branch}'.", say=outputText)
                     else:                    
                         context_file = os.path.join('promts', current_branch, 'newContext.json')
-                        wright("Имя диалога не указано. Оно бутет создано автоматически.", say=outputText)    
+                        write("Имя диалога не указано. Оно бутет создано автоматически.", say=outputText)    
                     with open(context_file, 'w', encoding='utf-8') as f:
                         json.dump([], f)  # Начинаем с пустого контекста
 
                 elif command in commands['showChatsCommands']:
                     chats = showChats(current_branch)
                     ruChats = re.sub(r'[a-zA-Z_]', '', chats)
-                    wright(chats, log=True)
-                    wright(ruChats, say=outputText)    
+                    write(chats, log=True)
+                    write(ruChats, say=outputText)    
 
                 elif command in commands['showCurrentChatCommands']:
-                    wright(chat, True)
+                    write(chat, True)
 
                 elif command in commands['selectChatCommands']:
                     if argument:
@@ -198,14 +198,14 @@ def main(queue,outputText,commandToSound,condition):
                         if chat_res:
                             chat = chat_res
                     else:
-                        wright("Ошибка: укажите название чата для переключения.", say=outputText)   
+                        write("Ошибка: укажите название чата для переключения.", say=outputText)   
                 
                 elif command in commands['restoreChatCommands']:
                     if argument:
                         try:
                             restore_chat(current_branch, argument)
                         except:
-                            wright("Ошибка: укажите имя файла для восстановления диалога.", say=outputText)
+                            write("Ошибка: укажите имя файла для восстановления диалога.", say=outputText)
                     else:
                         restore_chat(current_branch, f"{chat}.json")    
                 # Ветки
@@ -216,26 +216,26 @@ def main(queue,outputText,commandToSound,condition):
                             json.dump([], f)
                         with open(os.path.join('promts', argument, 'mandatory_context.json'), 'w', encoding='utf-8') as f:
                             json.dump([{"role": "system", "content": "Высокий приоритет контексту: "}], f, ensure_ascii=False)
-                        wright(f"Ветка '{argument}' создана.", say=outputText)
+                        write(f"Ветка '{argument}' создана.", say=outputText)
                     else:
-                        wright("Имя ветки не указано.", say=outputText)    
+                        write("Имя ветки не указано.", say=outputText)    
 
                 elif command in commands['showBranchCommands']:
                     branches = show_branches()
                     ruBranches = re.sub(r'[a-zA-Z_]', '', branches)
-                    wright(branches, log=True)
-                    wright(ruBranches, say=outputText)
+                    write(branches, log=True)
+                    write(ruBranches, say=outputText)
 
                 elif command in commands['showCurrentBranchCommands']:
-                    wright(f"Текущая ветка: {current_branch}", say=outputText)
+                    write(f"Текущая ветка: {current_branch}", say=outputText)
 
                 elif command in commands['selectBranchCommands']:
                     if argument:
                         current_branch = argument
                         chat = 'context'
-                        wright(f"Текущая ветка: {current_branch}, чат: {chat}", say=outputText)
+                        write(f"Текущая ветка: {current_branch}, чат: {chat}", say=outputText)
                     else:
-                        wright("Ошибка: укажите имя ветки для переключения.", say=outputText)
+                        write("Ошибка: укажите имя ветки для переключения.", say=outputText)
                 # Скрипты
                 elif any(command in item for sublist in scriptsNames.values() for item in sublist):
                     for script in scriptsNames.keys():
@@ -250,21 +250,21 @@ def main(queue,outputText,commandToSound,condition):
                         config['voice'] = voices[0]
                     with open('config.json', 'w', encoding='utf-8') as file:
                         json.dump(config, file, indent=4, ensure_ascii=False)
-                    wright(f"Голос изменен на {config['voice']}", say=outputText)
+                    write(f"Голос изменен на {config['voice']}", say=outputText)
                 
                 elif command in commands['webCommands']:
                     response = requestTextAI(res, current_branch, chat, True)
                     outputText.put(response)
-                    wright(response)
+                    write(response)
                     
             else:
                 pass
                 response = requestTextAI(res, current_branch, chat, False)
                 outputText.put(response)
-                wright(response)
+                write(response)
 
-            wright('------------')
+            write('------------')
     if active_timer:
         timer_stop_event.set()
         active_timer.join()
-    wright("Остановка main", True)
+    write("Остановка main", True)

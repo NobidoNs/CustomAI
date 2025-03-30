@@ -3,11 +3,11 @@ import json
 with open('devolp_config.json', 'r', encoding='utf-8') as file:
     devolp_config = json.load(file)
     outputFile = devolp_config['outputFile']
-    wrightLog = devolp_config['wrightLog']
+    writeLog = devolp_config['writeLog']
 
-def wright(text,log=False, say=False):
+def write(text,log=False, say=False):
     print(text)
-    if log == True or wrightLog == True or say:
+    if log == True or writeLog == True or say:
         with open(outputFile, 'a', encoding='utf-8') as file:
             file.write(f"\n{text}\n")
     if say:

@@ -5,7 +5,7 @@ import json
 import sys
 from pygame import mixer
 from app.init import run_init
-from app.utils.wright import wright
+from app.utils.write import write
 from app.STT import listenCommand, makeStream
 from app.main import main
 from app.TTS import tts
@@ -48,7 +48,7 @@ if __name__ == "__main__":
             mixer.music.load(soundStart)
             mixer.music.play()
         except:
-            wright("Error loading soundStart")
+            write("Error loading soundStart")
 
     try:
         while not condition.is_set():

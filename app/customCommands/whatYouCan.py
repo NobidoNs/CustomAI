@@ -1,4 +1,4 @@
-from app.utils.wright import wright
+from app.utils.write import write
 
 def text_commands_help():
     """
@@ -57,7 +57,7 @@ def text_commands_help():
 15. **Команды для запоминания важних вещей:**
         - "запомни (что-то)" — Запоминает указанную информацию.
     """
-    wright(help_text, log=True)
+    write(help_text, log=True)
 
 def voice_commands_help():
     """

@@ -1,5 +1,5 @@
 from g4f.client import Client
-from app.utils.wright import wright
+from app.utils.write import write
 from app.utils.content import save_context, load_context
 import json
 
@@ -11,8 +11,8 @@ client = Client()
 
 def requestTextAI(request, fastMode=False, precise=False):
     context = load_context()
-    wright(f'request: {request}',log=True)
-    wright('*Loading...*')
+    write(f'request: {request}',log=True)
+    write('*Loading...*')
     models = ["gpt-4","phi-4","llama-3.3-70b","gemini-1.5-flash","gpt-4o","gpt-4o-mini","o1"]
 
     if fastMode == True:
@@ -46,5 +46,5 @@ def requestTextAI(request, fastMode=False, precise=False):
             
             return response_text
         except:
-            wright('Get Response Failed', log=True)
+            write('Get Response Failed', log=True)
             pass

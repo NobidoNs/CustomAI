@@ -1,5 +1,5 @@
 from g4f.client import Client
-from app.utils.wright import wright
+from app.utils.write import write
 import json
 
 with open('devolp_config.json', 'r', encoding='utf-8') as file:
@@ -21,6 +21,6 @@ def defaultAI(messages,web_search):
 
             return response_text
         except:
-            wright('Ошибка получения ответа')
+            write('Ошибка получения ответа')
             pass
     return ''

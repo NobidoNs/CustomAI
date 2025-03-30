@@ -1,9 +1,9 @@
 from pygame import mixer
-from app.utils.wright import wright
+from app.utils.write import write
 
 def playSound(sound):
     try:
         mixer.music.load(sound)
         mixer.music.play()
     except:
-        wright("Error loading sound")
+        write("Error loading sound")

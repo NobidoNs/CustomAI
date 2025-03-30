@@ -1,5 +1,5 @@
 import os
-from app.utils.wright import wright
+from app.utils.write import write
 
 def showChats(branch):
     chats_dir = os.path.join('promts', branch)
