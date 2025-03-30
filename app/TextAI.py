@@ -35,11 +35,11 @@ def requestTextAI(request, branch, chat, web_search):
         response_text = hardPhilosophy(messages)    
     elif branch == 'джарвис':
         response_text = jarvis(messages, web_search)
-    elif branch == 'фан':
-        if chat == 'йода':
-            response_text = yoda(messages,web_search)
+    elif branch == 'fun':
+        if chat == 'мастер йода':
+            response_text = yoda(messages)
         elif chat in characters:
-            response_text = chars(request, chat,web_search)
+            response_text = chars(request, chat)
 
 
     try:

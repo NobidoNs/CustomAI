@@ -15,6 +15,7 @@ from app.customAI.timeAI import convertTime
 from app.customCommands.restoreChat import restore_chat
 from app.customCommands.showChats import showChats
 from app.customCommands.selectChat import selectChat
+from app.customCommands.selectBranch import selectBranch
 from app.sysControl.run import runPrograms
 
 with open('devolp_config.json', 'r', encoding='utf-8') as file:
@@ -185,9 +186,10 @@ def main(queue,outputText,commandToSound,condition):
 
                 elif command in commands['showChatsCommands']:
                     chats = showChats(current_branch)
-                    ruChats = re.sub(r'[a-zA-Z_]', '', chats)
-                    write(chats, log=True)
-                    write(ruChats, say=outputText)    
+                    # ruChats = re.sub(r'[a-zA-Z_]', '', chats)
+                    # write(chats, log=True)
+                    # write(ruChats, say=outputText)    
+                    write(chats, say=outputText)
 
                 elif command in commands['showCurrentChatCommands']:
                     write(chat, True)
@@ -222,18 +224,20 @@ def main(queue,outputText,commandToSound,condition):
 
                 elif command in commands['showBranchCommands']:
                     branches = show_branches()
-                    ruBranches = re.sub(r'[a-zA-Z_]', '', branches)
-                    write(branches, log=True)
-                    write(ruBranches, say=outputText)
+                    # ruBranches = re.sub(r'[a-zA-Z_]', '', branches)
+                    # write(branches, log=True)
+                    # write(ruBranches, say=outputText)
+                    write(branches, say=outputText) 
 
                 elif command in commands['showCurrentBranchCommands']:
                     write(f"Текущая ветка: {current_branch}", say=outputText)
 
                 elif command in commands['selectBranchCommands']:
                     if argument:
-                        current_branch = argument
-                        chat = 'context'
-                        write(f"Текущая ветка: {current_branch}, чат: {chat}", say=outputText)
+                        branch_res = selectBranch(argument, outputText)
+                        if branch_res:
+                            current_branch = branch_res
+                            chat = 'context'
                     else:
                         write("Ошибка: укажите имя ветки для переключения.", say=outputText)
                 # Скрипты

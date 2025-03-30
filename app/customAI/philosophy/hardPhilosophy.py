@@ -19,7 +19,7 @@ def hardPhilosophy(request):
       else:
         request.append({"role": "system", "content": "в этот раз ответь от женского лица"})
       response = client.chat.completions.create(
-          model="gpt-4o",
+          model=model,
           messages=[
             {"role": "user", "content": f"{content}"},
             {"role": "user", "content": f"{request}"}
