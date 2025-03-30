@@ -57,7 +57,7 @@ def parse_command(phrase, command):
             phrase = ' '.join(phrase.split()[1:]).lower()
     # print(phrase, command)
 
-    if phrase.startswith(command):
+    if phrase.lower().startswith(command):
         # print(command, phrase[len(command):].strip())
         return command, phrase[len(command):].strip()
     
@@ -108,7 +108,7 @@ def main(queue,outputText,commandToSound,condition):
                     with open(mand_path, 'r', encoding='utf-8') as file:
                         existing_data = json.load(file)
                     with open(mand_path, "w", encoding='utf-8') as file:
-                        new_data =  {"role": "user", "system": f"Высокий приоритет контексту {argument}. Запомни это: {argument}"}
+                        new_data =  {"role": "user", "content": f"Высокий приоритет контексту {argument}. Запомни это: {argument}"}
                         new_data2 = {"role": "user", "content": f"Запомни и это: {argument}"}
                         existing_data.append(new_data)
                         existing_data.append(new_data2)

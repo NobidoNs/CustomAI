@@ -54,8 +54,12 @@ def requestTextAI(request, branch, chat, web_search):
         response_text = defaultAI(messages, web_search)
 
     context.append({
-        "user": request,
-        "assistant": response_text
+        "role": "user",
+        "content": request,
+    })
+    context.append({
+        "role": "assistant",
+        "content": response_text
     })
     save_context(context, branch, chat)
 
