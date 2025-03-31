@@ -150,4 +150,20 @@ _(Ответ появится в том же файле)_
         clearFile()
 ```
 
-💡 **Идеи или баги?** Открывайте [Issue](https://github.com/NobidoNs/CustomAI/issues)!
+### ToDo:    
+-Скомпилировать в .exe для Windows    
+-Создать .deb/.rpm пакеты для Linux    
+-Собрать .app для macOS    
+-Создать простой интерфейс    
+-Увеличить словарь фраз для запуска команд
+
+### 💡 **Идеи или баги?** Открывайте [Issue](https://github.com/NobidoNs/CustomAI/issues)!
+
+### Используемые сторонние библиотеки  
+- [g4f](https://github.com/xtekky/gpt4free) – **GPL-3.0**  
+- [edge-tts](https://github.com/rany2/edge-tts) – **MIT**  
+- [SpeechRecognition](https://github.com/Uberi/speech_recognition) – **BSD-3-Clause**  
+- [Vosk](https://github.com/alphacep/vosk-api) – **Apache-2.0**  
+- [PyGame](https://www.pygame.org) – **LGPL-2.1**  
+- [psutil](https://github.com/giampaolo/psutil) – **BSD-3-Clause**  
+- [NumPy](https://numpy.org) – **BSD-3-Clause**  
