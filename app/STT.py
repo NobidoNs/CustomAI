@@ -116,7 +116,7 @@ def listenCommand(queue,condition,stream,say): # Listen for wake word and comman
 
     partRes = False
     wake_sound_played = False
-    stop_sound_played = False
+    stop_sound_played = 0
     audio_buffer = collections.deque(maxlen=MAX_FRAMES)
     last_speech_time = time.time()
 
@@ -152,13 +152,13 @@ def listenCommand(queue,condition,stream,say): # Listen for wake word and comman
         else:
             partial_result = json.loads(rec.PartialResult())
             partial_text = partial_result.get("partial", "")
-            
-            if partial_text.startswith(tuple(commands['muteCommands'])) and not stop_sound_played:
+
+            if partial_text.startswith(tuple(commands['muteCommands'])) and stop_sound_played <= 4:
                 queue.put(partial_text)
-                stop_sound_played = True
+                stop_sound_played += 1
 
             if partial_text in wakeWord and not wake_sound_played:
-                stop_sound_played = False
+                stop_sound_played = 0
                 partRes = True
                 startListenTime = time.time()
                 threading.Thread(target=playSound, args=('sounds/analog-button.mp3',), daemon=True).start()
